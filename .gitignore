@@ -1,0 +1,26 @@
+# Java
+*.class
+bin/
+
+# Database and Data
+mysql_data/
+database/data/
+*.log
+
+# Project specific
+database.properties
+src/database.properties
+bin/database.properties
+
+# Temporary/Debug files
+*.txt
+!README.md
+!task.md
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.project
+.classpath
+.settings/
