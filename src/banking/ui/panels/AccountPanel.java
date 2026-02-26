@@ -41,14 +41,7 @@ public class AccountPanel extends JPanel implements Refreshable {
         JPanel toolbar = new JPanel(new BorderLayout(15, 0));
         toolbar.setBackground(UIStyle.BACKGROUND_COLOR);
 
-        // Filter
-        JPanel filterBox = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-        filterBox.setBackground(UIStyle.BACKGROUND_COLOR);
-        filterBox.add(new JLabel("Status:"));
-        statusFilter = new JComboBox<>(new String[]{"ALL", "ACTIVE", "INACTIVE", "CLOSED"});
-        UIStyle.styleComboBox(statusFilter);
-        statusFilter.addActionListener(e -> loadAccounts());
-        filterBox.add(statusFilter);
+        // Filter removed as status is no longer part of the schema
 
         // Action buttons
         JPanel rightButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
@@ -65,7 +58,7 @@ public class AccountPanel extends JPanel implements Refreshable {
         rightButtons.add(btnAdd);
         rightButtons.add(btnRefresh);
 
-        toolbar.add(filterBox, BorderLayout.WEST);
+
         toolbar.add(rightButtons, BorderLayout.EAST);
 
         JPanel headerArea = new JPanel(new BorderLayout(0, 15));
@@ -76,7 +69,7 @@ public class AccountPanel extends JPanel implements Refreshable {
         add(headerArea, BorderLayout.NORTH);
 
         // --- Table ---
-        String[] columns = {"Account #", "Customer", "Type", "Balance", "Status", "Created"};
+        String[] columns = {"Account #", "Customer", "Balance"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -120,13 +113,7 @@ public class AccountPanel extends JPanel implements Refreshable {
         new SwingWorker<List<Account>, Void>() {
             @Override
             protected List<Account> doInBackground() throws Exception {
-                String filter = (String) statusFilter.getSelectedItem();
-                List<Account> all = bankingService.getAllAccounts();
-                if (!"ALL".equals(filter)) {
-                    Account.AccountStatus status = Account.AccountStatus.valueOf(filter);
-                    return all.stream().filter(a -> a.getStatus() == status).toList();
-                }
-                return all;
+                return bankingService.getAllAccounts();
             }
 
             @Override
@@ -143,19 +130,11 @@ public class AccountPanel extends JPanel implements Refreshable {
     private void populateTable(List<Account> accounts) {
         tableModel.setRowCount(0);
         for (Account a : accounts) {
-            String customerName = "";
-            if (a.getCustomer() != null) {
-                customerName = a.getCustomer().getName();
-            } else {
-                customerName = "Customer #" + a.getCustomerId();
-            }
+            String customerName = "Customer #" + a.getCustomerId();
             tableModel.addRow(new Object[]{
                     a.getAccountNumber(),
                     customerName,
-                    a.getAccountType().name(),
-                    banking.util.Validator.formatCurrency(a.getBalance()),
-                    a.getStatus().name(),
-                    a.getCreatedAt() != null ? a.getCreatedAt().toString().substring(0, 10) : ""
+                    banking.util.Validator.formatCurrency(a.getBalance())
             });
         }
     }
@@ -176,13 +155,6 @@ public class AccountPanel extends JPanel implements Refreshable {
             return;
         }
         String accountNumber = (String) tableModel.getValueAt(row, 0);
-        String status = (String) tableModel.getValueAt(row, 4);
-
-        if ("CLOSED".equals(status)) {
-            UIStyle.showWarning(this, "This account is already closed.");
-            return;
-        }
-
         if (!UIStyle.showConfirm(this, "Close account " + accountNumber + "?\nThis action cannot be undone.",
                 "Confirm Close")) {
             return;

@@ -83,7 +83,7 @@ public class CustomerPanel extends JPanel implements Refreshable {
         add(headerArea, BorderLayout.NORTH);
 
         // --- Table ---
-        String[] columns = {"ID", "Name", "Phone", "Email", "Address", "Created"};
+        String[] columns = {"ID", "Name", "Phone", "Email"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -159,9 +159,7 @@ public class CustomerPanel extends JPanel implements Refreshable {
                     c.getCustomerId(),
                     c.getName(),
                     c.getPhone(),
-                    c.getEmail(),
-                    c.getAddress() != null ? c.getAddress() : "",
-                    c.getCreatedAt() != null ? c.getCreatedAt().toString().substring(0, 10) : ""
+                    c.getEmail()
             });
         }
     }

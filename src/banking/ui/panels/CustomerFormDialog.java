@@ -20,7 +20,7 @@ public class CustomerFormDialog extends JDialog {
     private JTextField txtName;
     private JTextField txtPhone;
     private JTextField txtEmail;
-    private JTextField txtAddress;
+
 
     public CustomerFormDialog(Window parent, BankingService bankingService, Customer existing) {
         super(parent, existing == null ? "Add Customer" : "Edit Customer", ModalityType.APPLICATION_MODAL);
@@ -75,20 +75,13 @@ public class CustomerFormDialog extends JDialog {
         UIStyle.styleTextField(txtEmail);
         panel.add(txtEmail, gbc);
 
-        // Address
-        gbc.gridy++;
-        panel.add(createLabel("Address"), gbc);
-        gbc.gridy++;
-        txtAddress = new JTextField();
-        UIStyle.styleTextField(txtAddress);
-        panel.add(txtAddress, gbc);
+
 
         // Pre-fill for edit mode
         if (existing != null) {
             txtName.setText(existing.getName());
             txtPhone.setText(existing.getPhone());
             txtEmail.setText(existing.getEmail());
-            txtAddress.setText(existing.getAddress() != null ? existing.getAddress() : "");
         }
 
         // Buttons
@@ -123,7 +116,6 @@ public class CustomerFormDialog extends JDialog {
         String name = txtName.getText().trim();
         String phone = txtPhone.getText().trim();
         String email = txtEmail.getText().trim();
-        String address = txtAddress.getText().trim();
 
         // Validate
         Validator.ValidationResult result = Validator.validateCustomer(name, phone, email);
@@ -136,12 +128,11 @@ public class CustomerFormDialog extends JDialog {
             @Override
             protected Void doInBackground() throws Exception {
                 if (existing == null) {
-                    bankingService.createCustomer(name, phone, email, address);
+                    bankingService.createCustomer(name, phone, email, "");
                 } else {
                     existing.setName(name);
                     existing.setPhone(phone);
                     existing.setEmail(email);
-                    existing.setAddress(address);
                     bankingService.updateCustomer(existing);
                 }
                 return null;

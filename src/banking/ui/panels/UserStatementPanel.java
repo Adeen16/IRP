@@ -54,7 +54,7 @@ public class UserStatementPanel extends JPanel implements Refreshable {
         add(header, BorderLayout.NORTH);
 
         // Table
-        String[] columns = {"Date", "Description", "Type", "Amount", "Balance After"};
+        String[] columns = {"Date", "Type", "Amount"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) { return false; }
@@ -83,18 +83,15 @@ public class UserStatementPanel extends JPanel implements Refreshable {
             protected List<Transaction> doInBackground() throws Exception {
                 return bankingService.getTransactionHistory(accountNumber);
             }
-            @Override
             protected void done() {
                 try {
                     List<Transaction> txns = get();
                     tableModel.setRowCount(0);
                     for (Transaction t : txns) {
                         tableModel.addRow(new Object[]{
-                            t.getTransactionDate().toString().substring(0, 16),
-                            t.getDescription(),
-                            t.getTransactionType().name(),
-                            banking.util.Validator.formatCurrency(t.getAmount()),
-                            banking.util.Validator.formatCurrency(t.getBalanceAfter())
+                            t.getCreatedAt() != null ? t.getCreatedAt().toString().substring(0, 16) : "",
+                            t.getType().name(),
+                            banking.util.Validator.formatCurrency(t.getAmount())
                         });
                     }
                 } catch (Exception ignored) {}

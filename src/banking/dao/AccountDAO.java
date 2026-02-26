@@ -8,7 +8,6 @@ public interface AccountDAO {
     boolean updateBalance(String accNumber, BigDecimal balance);
     List<Account> findByCustomerId(int customerId);
     List<Account> findAll();
-    boolean updateStatus(String accNumber, Account.AccountStatus status);
     int getTotalAccountCount();
     BigDecimal getTotalBankBalance();
 }

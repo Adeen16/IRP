@@ -64,7 +64,7 @@ public class UserPanel extends JPanel implements Refreshable {
         add(headerArea, BorderLayout.NORTH);
 
         // --- Table ---
-        String[] columns = {"ID", "Username", "Role", "Active", "Last Login", "Created"};
+        String[] columns = {"ID", "Username", "Role", "Created"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -130,8 +130,6 @@ public class UserPanel extends JPanel implements Refreshable {
                     u.getUserId(),
                     u.getUsername(),
                     u.getRole().name(),
-                    u.isActive() ? "Yes" : "No",
-                    u.getLastLogin() != null ? u.getLastLogin().toString().substring(0, 16) : "Never",
                     u.getCreatedAt() != null ? u.getCreatedAt().toString().substring(0, 10) : ""
             });
         }
