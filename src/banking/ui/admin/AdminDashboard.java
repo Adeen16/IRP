@@ -35,6 +35,7 @@ public class AdminDashboard extends JFrame {
     private CustomerPanel customerPanel;
     private AccountPanel accountPanel;
     private TransactionPanel transactionPanel;
+    private ManageLoansPanel loansPanel;
     private UserPanel userPanel;
 
     public AdminDashboard(User user) {
@@ -76,6 +77,7 @@ public class AdminDashboard extends JFrame {
         JButton btnOverview     = addNavButton(sidebar, "[D] Dashboard",      "overview");
         JButton btnCustomers    = addNavButton(sidebar, "[C] Customers",        "customers");
         JButton btnAccounts     = addNavButton(sidebar, "[A] Accounts",         "accounts");
+        JButton btnLoans        = addNavButton(sidebar, "[L] Manage Loans",     "loans");
         JButton btnTransactions = addNavButton(sidebar, "[T] Transactions",     "transactions");
         JButton btnUsers        = addNavButton(sidebar, "[S] System Users",     "users");
 
@@ -112,12 +114,14 @@ public class AdminDashboard extends JFrame {
         overviewPanel    = new OverviewPanel(analyticsService);
         customerPanel    = new CustomerPanel(bankingService);
         accountPanel     = new AccountPanel(bankingService);
+        loansPanel       = new ManageLoansPanel(); // Initialize loansPanel
         transactionPanel = new TransactionPanel(bankingService);
         userPanel        = new UserPanel(authService, adminUser);
 
         contentArea.add(overviewPanel,    "overview");
         contentArea.add(customerPanel,    "customers");
         contentArea.add(accountPanel,     "accounts");
+        contentArea.add(loansPanel,       "loans");
         contentArea.add(transactionPanel, "transactions");
         contentArea.add(userPanel,        "users");
 

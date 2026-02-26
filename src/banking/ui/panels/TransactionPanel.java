@@ -96,7 +96,7 @@ public class TransactionPanel extends JPanel implements Refreshable {
         add(headerArea, BorderLayout.NORTH);
 
         // --- Table ---
-        String[] columns = {"ID", "Account #", "Type", "Amount", "Balance After", "Reference", "Description", "Date"};
+        String[] columns = {"ID", "Account #", "Type", "Amount", "Date"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -224,12 +224,9 @@ public class TransactionPanel extends JPanel implements Refreshable {
             tableModel.addRow(new Object[]{
                     t.getTransactionId(),
                     t.getAccountNumber(),
-                    t.getTransactionType().name(),
+                    t.getType().name(),
                     banking.util.Validator.formatCurrency(t.getAmount()),
-                    banking.util.Validator.formatCurrency(t.getBalanceAfter()),
-                    t.getReferenceAccount() != null ? t.getReferenceAccount() : "",
-                    t.getDescription() != null ? t.getDescription() : "",
-                    t.getTransactionDate() != null ? t.getTransactionDate().toString().substring(0, 10) : ""
+                    t.getCreatedAt() != null ? t.getCreatedAt().toString().substring(0, 10) : ""
             });
         }
     }

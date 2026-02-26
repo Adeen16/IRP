@@ -17,7 +17,7 @@ public class DatabaseConnection {
             if (input == null) {
                 url = "jdbc:mysql://localhost:3306/banking_system?useSSL=false&serverTimezone=UTC";
                 username = "root";
-                password = "irp_winners"; 
+                password = ""; 
             } else {
                 prop.load(input);
                 url = prop.getProperty("db.url");

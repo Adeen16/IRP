@@ -35,10 +35,7 @@ public class AuthService {
                 throw new Exception("User not found.");
             }
 
-            if (!user.isActive()) {
-                System.out.println("User account is inactive: " + username);
-                throw new Exception("Account is inactive. Please contact your administrator.");
-            }
+
 
             String hashedInput = HashUtil.hashPassword(password);
             String storedHash = user.getPasswordHash(); // Fixed method name
@@ -49,8 +46,6 @@ public class AuthService {
             System.out.println("DEBUG: Stored hash: " + storedHash);
 
             if (hashedInput.equalsIgnoreCase(storedHash)) { // Case-insensitive for safety
-                System.out.println("Authentication successful for user: " + username);
-                userDAO.updateLastLogin(user.getUserId());
                 return user;
             } else {
                 System.out.println("Authentication failed: Password mismatch for user: " + username);

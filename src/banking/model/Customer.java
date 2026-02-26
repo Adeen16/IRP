@@ -1,14 +1,10 @@
 package banking.model;
 
-import java.sql.Timestamp;
-
 public class Customer {
     private int customerId;
     private String name;
     private String phone;
     private String email;
-    private String address;
-    private Timestamp createdAt = new Timestamp(System.currentTimeMillis());
 
     public Customer() {}
     
@@ -27,8 +23,4 @@ public class Customer {
     public void setPhone(String phone) { this.phone = phone; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
-    public String getAddress() { return address; }
-    public void setAddress(String address) { this.address = address; }
-    public Timestamp getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Timestamp ts) { this.createdAt = ts; }
 }

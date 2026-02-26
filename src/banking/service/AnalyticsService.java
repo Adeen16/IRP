@@ -29,7 +29,7 @@ public class AnalyticsService {
         summary.put("totalBalance", accountDAO.getTotalBankBalance());
         summary.put("todayTransactions", transactionDAO.getTransactionCountByDate(LocalDate.now()));
         summary.put("todayDeposits", transactionDAO.getTotalTransactionAmountByDate(LocalDate.now(), Transaction.TransactionType.DEPOSIT));
-        summary.put("todayWithdrawals", transactionDAO.getTotalTransactionAmountByDate(LocalDate.now(), Transaction.TransactionType.WITHDRAWAL));
+        summary.put("todayWithdrawals", transactionDAO.getTotalTransactionAmountByDate(LocalDate.now(), Transaction.TransactionType.WITHDRAW));
         
         return summary;
     }
@@ -38,24 +38,13 @@ public class AnalyticsService {
         Map<String, BigDecimal> summary = new HashMap<>();
         
         summary.put("deposits", transactionDAO.getTotalTransactionAmountByDate(date, Transaction.TransactionType.DEPOSIT));
-        summary.put("withdrawals", transactionDAO.getTotalTransactionAmountByDate(date, Transaction.TransactionType.WITHDRAWAL));
-        summary.put("transfersIn", transactionDAO.getTotalTransactionAmountByDate(date, Transaction.TransactionType.TRANSFER_IN));
-        summary.put("transfersOut", transactionDAO.getTotalTransactionAmountByDate(date, Transaction.TransactionType.TRANSFER_OUT));
+        summary.put("withdrawals", transactionDAO.getTotalTransactionAmountByDate(date, Transaction.TransactionType.WITHDRAW));
+        summary.put("transfers", transactionDAO.getTotalTransactionAmountByDate(date, Transaction.TransactionType.TRANSFER));
         
         return summary;
     }
     
-    public Map<String, Integer> getAccountTypeDistribution() throws Exception {
-        Map<String, Integer> distribution = new HashMap<>();
-        List<Account> accounts = accountDAO.findAll();
-        
-        for (Account account : accounts) {
-            String type = account.getAccountType().name();
-            distribution.put(type, distribution.getOrDefault(type, 0) + 1);
-        }
-        
-        return distribution;
-    }
+
     
     public Map<String, Object> getAccountAnalytics(String accountNumber) throws Exception {
         Map<String, Object> analytics = new HashMap<>();
@@ -69,8 +58,6 @@ public class AnalyticsService {
         
         analytics.put("accountNumber", accountNumber);
         analytics.put("currentBalance", account.getBalance());
-        analytics.put("accountType", account.getAccountType().name());
-        analytics.put("status", account.getStatus().name());
         analytics.put("totalTransactions", transactions.size());
         
         BigDecimal totalDeposits = BigDecimal.ZERO;

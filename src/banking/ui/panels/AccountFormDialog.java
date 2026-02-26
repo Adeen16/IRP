@@ -18,7 +18,7 @@ public class AccountFormDialog extends JDialog {
     private final BankingService bankingService;
     private boolean success = false;
     private JComboBox<CustomerItem> customerCombo;
-    private JComboBox<Account.AccountType> typeCombo;
+
     private JTextField txtInitialDeposit;
 
     public AccountFormDialog(Window parent, BankingService bankingService) {
@@ -58,13 +58,7 @@ public class AccountFormDialog extends JDialog {
         UIStyle.styleComboBox(customerCombo);
         panel.add(customerCombo, gbc);
 
-        // Account type
-        gbc.gridy++;
-        panel.add(createLabel("Account Type *"), gbc);
-        gbc.gridy++;
-        typeCombo = new JComboBox<>(Account.AccountType.values());
-        UIStyle.styleComboBox(typeCombo);
-        panel.add(typeCombo, gbc);
+
 
         // Initial deposit
         gbc.gridy++;
@@ -131,7 +125,7 @@ public class AccountFormDialog extends JDialog {
             return;
         }
 
-        Account.AccountType type = (Account.AccountType) typeCombo.getSelectedItem();
+
 
         BigDecimal initialDeposit;
         try {
@@ -149,7 +143,7 @@ public class AccountFormDialog extends JDialog {
         new SwingWorker<String, Void>() {
             @Override
             protected String doInBackground() throws Exception {
-                Account account = bankingService.createAccount(selected.id, type);
+                Account account = bankingService.createAccount(selected.id);
                 if (deposit.compareTo(java.math.BigDecimal.ZERO) > 0) {
                     bankingService.deposit(account.getAccountNumber(), deposit);
                 }
