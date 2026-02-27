@@ -135,8 +135,11 @@ public class UserOverviewPanel extends JPanel implements Refreshable {
         new SwingWorker<List<Account>, Void>() {
             @Override
             protected List<Account> doInBackground() throws Exception {
-                // Mock customerId
-                return bankingService.getAccountsByCustomer(1);
+                banking.model.Customer customer = bankingService.getCustomerByUserId(currentUser.getUserId());
+                if (customer != null) {
+                    return bankingService.getAccountsByCustomer(customer.getCustomerId());
+                }
+                return new java.util.ArrayList<>();
             }
             @Override
             protected void done() {

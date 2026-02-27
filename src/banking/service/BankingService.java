@@ -6,6 +6,8 @@ import banking.dao.CustomerDAO;
 import banking.dao.CustomerDAOImpl;
 import banking.dao.TransactionDAO;
 import banking.dao.TransactionDAOImpl;
+import banking.dao.UserDAO;
+import banking.dao.UserDAOImpl;
 import banking.exception.AccountNotFoundException;
 import banking.exception.BankingException;
 import banking.exception.InsufficientBalanceException;
@@ -28,11 +30,13 @@ public class BankingService {
     private AccountDAO accountDAO;
     private CustomerDAO customerDAO;
     private TransactionDAO transactionDAO;
+    private UserDAO userDAO;
     
     public BankingService() {
         this.accountDAO = new AccountDAOImpl();
         this.customerDAO = new CustomerDAOImpl();
         this.transactionDAO = new TransactionDAOImpl();
+        this.userDAO = new UserDAOImpl();
     }
     
     public Customer createCustomer(String name, String phone, String email, String address) throws Exception {
@@ -42,6 +46,7 @@ public class BankingService {
         }
         
         Customer customer = new Customer(name, phone, email);
+        // Note: address is not in the schema yet, but accepted in signature for future-proofing
         int customerId = customerDAO.create(customer);
         customer.setCustomerId(customerId);
         return customer;
@@ -92,6 +97,7 @@ public class BankingService {
             transactionDAO.create(transaction);
             
             conn.commit();
+            logTransactionToFile(transaction);
             return transaction;
         } catch (Exception e) {
             if (conn != null) conn.rollback();
@@ -131,6 +137,7 @@ public class BankingService {
             transactionDAO.create(transaction);
             
             conn.commit();
+            logTransactionToFile(transaction);
             return transaction;
         } catch (Exception e) {
             if (conn != null) conn.rollback();
@@ -192,6 +199,8 @@ public class BankingService {
             transactionDAO.create(inTransaction);
             
             conn.commit();
+            logTransactionToFile(outTransaction);
+            logTransactionToFile(inTransaction);
             return new Transaction[]{outTransaction, inTransaction};
         } catch (Exception e) {
             if (conn != null) conn.rollback();
@@ -205,10 +214,37 @@ public class BankingService {
     }
 
     private void lockAccount(Connection conn, String accountNumber) throws Exception {
-        String sql = "SELECT balance FROM accounts WHERE account_number = ? FOR UPDATE";
+        String sql = "SELECT balance FROM account WHERE account_number = ? FOR UPDATE";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, accountNumber);
             stmt.executeQuery();
+        }
+    }
+    
+    private void logTransactionToFile(Transaction t) {
+        try {
+            Account account = accountDAO.findByAccountNumber(t.getAccountNumber());
+            String username = "UNKNOWN";
+            if (account != null) {
+                Customer customer = customerDAO.findById(account.getCustomerId());
+                if (customer != null) {
+                    banking.model.User user = userDAO.findById(customer.getUserId());
+                    if (user != null) {
+                        username = user.getUsername();
+                    }
+                }
+            }
+            try (java.io.PrintWriter out = new java.io.PrintWriter(new java.io.FileWriter("transaction_log.txt", true))) {
+                out.printf("%s | %s | %s | %s | %s%n",
+                    java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                    username,
+                    t.getAccountNumber(),
+                    t.getType().name(),
+                    t.getAmount().toString()
+                );
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to log transaction: " + e.getMessage());
         }
     }
     
@@ -250,6 +286,10 @@ public class BankingService {
     
     public Customer getCustomer(int customerId) throws Exception {
         return customerDAO.findById(customerId);
+    }
+    
+    public Customer getCustomerByUserId(int userId) throws Exception {
+        return customerDAO.findByUserId(userId);
     }
     
     public boolean updateCustomer(Customer customer) throws Exception {

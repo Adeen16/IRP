@@ -2,6 +2,7 @@ package banking.ui.panels;
 
 import banking.model.Account;
 import banking.model.Transaction;
+import banking.model.Customer;
 import banking.model.User;
 import banking.service.BankingService;
 import banking.ui.Refreshable;
@@ -104,7 +105,11 @@ public class UserStatementPanel extends JPanel implements Refreshable {
         new SwingWorker<List<Account>, Void>() {
             @Override
             protected List<Account> doInBackground() throws Exception {
-                return bankingService.getAccountsByCustomer(1);
+                Customer customer = bankingService.getCustomerByUserId(currentUser.getUserId());
+                if (customer != null) {
+                    return bankingService.getAccountsByCustomer(customer.getCustomerId());
+                }
+                return new java.util.ArrayList<>();
             }
             @Override
             protected void done() {

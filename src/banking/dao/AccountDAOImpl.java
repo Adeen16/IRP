@@ -12,7 +12,7 @@ public class AccountDAOImpl implements AccountDAO {
 
     @Override
     public Account findByAccountNumber(String accNumber) {
-        String sql = "SELECT * FROM account WHERE account_number = ?";
+        String sql = "SELECT account_number, customer_id, balance FROM account WHERE account_number = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, accNumber);
@@ -63,7 +63,7 @@ public class AccountDAOImpl implements AccountDAO {
     @Override
     public List<Account> findByCustomerId(int customerId) {
         List<Account> list = new ArrayList<>();
-        String sql = "SELECT * FROM account WHERE customer_id = ?";
+        String sql = "SELECT account_number, customer_id, balance FROM account WHERE customer_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, customerId);
@@ -85,7 +85,7 @@ public class AccountDAOImpl implements AccountDAO {
     @Override
     public List<Account> findAll() {
         List<Account> list = new ArrayList<>();
-        String sql = "SELECT * FROM account";
+        String sql = "SELECT account_number, customer_id, balance FROM account";
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {

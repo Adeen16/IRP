@@ -17,9 +17,11 @@ CREATE TABLE users (
 -- customer table
 CREATE TABLE customer (
     customer_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT UNIQUE,
     name VARCHAR(100) NOT NULL,
     phone VARCHAR(20),
-    email VARCHAR(100)
+    email VARCHAR(100),
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 -- account table
@@ -46,6 +48,6 @@ INSERT INTO users (username, password_hash, role) VALUES
 ('admin', '240be518fabd2724ddb6f04eeb9f7c7b21c4e5e1b8f8e3d5a0c1b2d3e4f5a6b7', 'ADMIN');
 
 -- Insert default user user (password: user123)
--- SHA-256 hash for user123: 0a041b9462caa4a31bac3567e0b6e6fd9100787db2ab433d96f6d178cabfce90
+-- SHA-256 hash for user123: e606e38b0d8c19b24cf0ee3808183162ea7cd63ff7912dbb22b5e803286b4446
 INSERT INTO users (username, password_hash, role) VALUES
-('user', '0a041b9462caa4a31bac3567e0b6e6fd9100787db2ab433d96f6d178cabfce90', 'USER');
+('user', 'e606e38b0d8c19b24cf0ee3808183162ea7cd63ff7912dbb22b5e803286b4446', 'USER');

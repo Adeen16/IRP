@@ -23,108 +23,122 @@ public class LoginForm extends JFrame {
     }
 
     private void initializeUI() {
-        setTitle("Secure Banking System - Login");
+        setTitle("Secure Banking System");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(450, 550);
+        setSize(900, 600); // Expanded size for the gorgeous split-pane
         setLocationRelativeTo(null);
         setResizable(false);
 
-        // Main Container
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(UIStyle.BACKGROUND_COLOR);
+        // Split panel layout (50/50)
+        JPanel mainPanel = new JPanel(new GridLayout(1, 2));
         setContentPane(mainPanel);
 
-        // Header (Slate background)
-        JPanel headerPanel = new JPanel(new GridBagLayout());
-        headerPanel.setBackground(UIStyle.PRIMARY_COLOR);
-        headerPanel.setPreferredSize(new Dimension(450, 180));
+        // --- Left Panel (Branding) ---
+        JPanel leftPanel = new JPanel(new GridBagLayout());
+        leftPanel.setBackground(new Color(15, 23, 42)); // Deep Navy Blue (Slate 900)
         
+        GridBagConstraints gbcLeft = new GridBagConstraints();
+        gbcLeft.gridx = 0;
+        gbcLeft.gridy = 0;
+        gbcLeft.insets = new Insets(10, 10, 5, 10);
+        
+        // Logo / Icon (Text based modern emoji for 0 dependency)
+        JLabel lblLogo = new JLabel("🏦");
+        lblLogo.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 80));
+        lblLogo.setForeground(Color.WHITE);
+        leftPanel.add(lblLogo, gbcLeft);
+
+        gbcLeft.gridy++;
         JLabel lblTitle = new JLabel("SECURE BANK");
-        lblTitle.setFont(UIStyle.TITLE_FONT);
+        lblTitle.setFont(new Font("Inter", Font.BOLD, 38));
         lblTitle.setForeground(Color.WHITE);
-        headerPanel.add(lblTitle);
+        leftPanel.add(lblTitle, gbcLeft);
         
-        mainPanel.add(headerPanel, BorderLayout.NORTH);
+        gbcLeft.gridy++;
+        gbcLeft.insets = new Insets(5, 10, 10, 10);
+        JLabel lblTagline = new JLabel("Enterprise Grade Financial Security");
+        lblTagline.setFont(new Font("Inter", Font.PLAIN, 16));
+        lblTagline.setForeground(new Color(148, 163, 184)); // Slate 400
+        leftPanel.add(lblTagline, gbcLeft);
 
-        // Login Card (Rounded)
-        banking.ui.components.ModernUIComponents.RoundedPanel cardPanel = 
-            new banking.ui.components.ModernUIComponents.RoundedPanel(20, Color.WHITE);
-        cardPanel.setLayout(new GridBagLayout());
-        cardPanel.setPreferredSize(new Dimension(380, 320));
+        mainPanel.add(leftPanel);
+
+        // --- Right Panel (Form) ---
+        JPanel rightPanel = new JPanel(new GridBagLayout());
+        rightPanel.setBackground(Color.WHITE);
         
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 20, 8, 20);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
+        GridBagConstraints gbcRight = new GridBagConstraints();
+        gbcRight.gridx = 0;
+        gbcRight.fill = GridBagConstraints.HORIZONTAL;
+        gbcRight.insets = new Insets(10, 50, 10, 50);
+        gbcRight.weightx = 1.0;
+        
         // Welcome Text
-        JLabel lblWelcome = new JLabel("Sign In", SwingConstants.CENTER);
-        lblWelcome.setFont(UIStyle.HEADER_FONT);
-        lblWelcome.setForeground(UIStyle.TEXT_COLOR);
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        gbc.insets = new Insets(10, 0, 20, 0);
-        cardPanel.add(lblWelcome, gbc);
+        gbcRight.gridy = 0;
+        gbcRight.insets = new Insets(10, 50, 40, 50);
+        JLabel lblWelcome = new JLabel("Welcome Back", SwingConstants.LEFT);
+        lblWelcome.setFont(new Font("Inter", Font.BOLD, 32));
+        lblWelcome.setForeground(new Color(30, 41, 59)); // Slate 800
+        rightPanel.add(lblWelcome, gbcRight);
 
-        // Username
-        gbc.gridwidth = 1;
-        gbc.insets = new Insets(5, 5, 2, 5);
-        gbc.gridy = 1;
+        // Username Label
+        gbcRight.gridy++;
+        gbcRight.insets = new Insets(5, 50, 5, 50);
         JLabel lblUser = new JLabel("Username");
-        UIStyle.styleLabel(lblUser);
-        cardPanel.add(lblUser, gbc);
+        lblUser.setFont(new Font("Inter", Font.BOLD, 13));
+        lblUser.setForeground(new Color(100, 116, 139)); // Slate 500
+        rightPanel.add(lblUser, gbcRight);
 
-        gbc.gridy = 2;
-        gbc.insets = new Insets(0, 5, 10, 5);
+        // Username Input
+        gbcRight.gridy++;
+        gbcRight.insets = new Insets(0, 50, 20, 50);
         txtUsername = new JTextField(20);
-        UIStyle.styleTextField(txtUsername);
-        cardPanel.add(txtUsername, gbc);
+        txtUsername.setPreferredSize(new Dimension(300, 45));
+        txtUsername.setFont(new Font("Inter", Font.PLAIN, 16));
+        // Soft rounded gray border
+        txtUsername.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(203, 213, 225), 1, true),
+            BorderFactory.createEmptyBorder(5, 15, 5, 15)
+        ));
+        rightPanel.add(txtUsername, gbcRight);
 
-        // Password
-        gbc.gridy = 3;
-        gbc.insets = new Insets(5, 5, 2, 5);
+        // Password Label
+        gbcRight.gridy++;
+        gbcRight.insets = new Insets(5, 50, 5, 50);
         JLabel lblPass = new JLabel("Password");
-        UIStyle.styleLabel(lblPass);
-        cardPanel.add(lblPass, gbc);
+        lblPass.setFont(new Font("Inter", Font.BOLD, 13));
+        lblPass.setForeground(new Color(100, 116, 139));
+        rightPanel.add(lblPass, gbcRight);
 
-        gbc.gridy = 4;
-        gbc.insets = new Insets(0, 5, 10, 5);
+        // Password Input
+        gbcRight.gridy++;
+        gbcRight.insets = new Insets(0, 50, 35, 50);
         txtPassword = new JPasswordField(20);
-        UIStyle.stylePasswordField(txtPassword);
-        cardPanel.add(txtPassword, gbc);
+        txtPassword.setPreferredSize(new Dimension(300, 45));
+        txtPassword.setFont(new Font("Inter", Font.PLAIN, 16));
+        txtPassword.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(203, 213, 225), 1, true),
+            BorderFactory.createEmptyBorder(5, 15, 5, 15)
+        ));
+        rightPanel.add(txtPassword, gbcRight);
 
         // Login Button
-        gbc.gridy = 5;
-        gbc.insets = new Insets(20, 5, 10, 5);
-        btnLogin = new JButton("LOGIN");
-        UIStyle.stylePrimaryButton(btnLogin);
-        cardPanel.add(btnLogin, gbc);
+        gbcRight.gridy++;
+        gbcRight.insets = new Insets(10, 50, 10, 50);
+        btnLogin = new JButton("Sign In");
+        btnLogin.setPreferredSize(new Dimension(300, 50));
+        btnLogin.setFont(new Font("Inter", Font.BOLD, 16));
+        btnLogin.setForeground(Color.WHITE);
+        btnLogin.setBackground(new Color(37, 99, 235)); // Sleek Blue 600
+        btnLogin.setFocusPainted(false);
+        btnLogin.setBorder(new EmptyBorder(10, 10, 10, 10));
+        btnLogin.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        rightPanel.add(btnLogin, gbcRight);
 
-        // Overlay the card on the header/body boundary
-        JPanel centerWrapper = new JPanel(null); // Absolute layout for custom positioning
-        centerWrapper.setBackground(UIStyle.BACKGROUND_COLOR);
-        
-        cardPanel.setBounds(35, -50, 380, 320); // Position card to overlap the header
-        centerWrapper.add(cardPanel);
-        
-        mainPanel.add(centerWrapper, BorderLayout.CENTER);
+        mainPanel.add(rightPanel);
 
-        // Footer
-        JLabel lblFooter = new JLabel("© 2026 Secure Banking Corp", SwingConstants.CENTER);
-        lblFooter.setFont(UIStyle.SMALL_FONT);
-        lblFooter.setForeground(UIStyle.TEXT_LIGHT);
-        lblFooter.setBorder(new EmptyBorder(10, 10, 20, 10));
-        mainPanel.add(lblFooter, BorderLayout.SOUTH);
-
-        // Action Listener
-        btnLogin.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                handleLogin();
-            }
-        });
-
-        // Enter key support
+        // Action Listeners
+        btnLogin.addActionListener(e -> handleLogin());
         txtPassword.addActionListener(e -> handleLogin());
         txtUsername.addActionListener(e -> handleLogin());
     }
@@ -139,7 +153,7 @@ public class LoginForm extends JFrame {
         }
 
         btnLogin.setEnabled(false);
-        btnLogin.setText("AUTHENTICATING...");
+        btnLogin.setText("Authenticating...");
 
         SwingWorker<User, Void> worker = new SwingWorker<>() {
             @Override
@@ -162,7 +176,7 @@ public class LoginForm extends JFrame {
                 } catch (Exception ex) {
                     UIStyle.showError(LoginForm.this, "Authentication failed: " + ex.getCause().getMessage());
                     btnLogin.setEnabled(true);
-                    btnLogin.setText("LOGIN");
+                    btnLogin.setText("Sign In");
                 }
             }
         };

@@ -30,7 +30,11 @@ public class DatabaseConnection {
     }
 
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(url, username, password);
+        Connection conn = DriverManager.getConnection(url, username, password);
+        try (java.sql.Statement stmt = conn.createStatement()) {
+            stmt.execute("SET FOREIGN_KEY_CHECKS = 1;");
+        }
+        return conn;
     }
     
     public static void releaseConnection(Connection connection) {
