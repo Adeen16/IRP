@@ -14,11 +14,26 @@ public class AuthService {
         this.userDAO = new UserDAOImpl();
     }
 
-    public User createUser(String username, String password, User.UserRole role, Integer customerId) throws Exception {
+    public User createUser(String username, String password, User.UserRole role, Integer existingCustomerId) throws Exception {
         String hashedPassword = HashUtil.hashPassword(password);
         User user = new User(username, hashedPassword, role);
         
         if (userDAO.create(user)) {
+            if (role == User.UserRole.USER) {
+                BankingService bankingService = new BankingService();
+                if (existingCustomerId != null) {
+                    banking.model.Customer c = bankingService.getCustomer(existingCustomerId);
+                    if (c != null) {
+                        c.setUserId(user.getUserId());
+                        bankingService.updateCustomer(c);
+                    }
+                } else {
+                    banking.model.Customer newCustomer = bankingService.createCustomer(username, "000-000-0000", username + "@securebank.com", "N/A");
+                    newCustomer.setUserId(user.getUserId());
+                    bankingService.updateCustomer(newCustomer);
+                    bankingService.createAccount(newCustomer.getCustomerId());
+                }
+            }
             return user;
         } else {
             throw new Exception("Failed to create user account.");
@@ -26,6 +41,9 @@ public class AuthService {
     }
 
     public User login(String username, String password) throws Exception {
+        if (!banking.util.DatabaseConnection.testConnection()) {
+            throw new Exception("Database is Offline. Please start the MySQL service.");
+        }
         try {
             System.out.println("Login attempt for user: " + username);
             User user = userDAO.findByUsername(username);

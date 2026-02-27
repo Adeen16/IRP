@@ -1,0 +1,116 @@
+/* Root & Layouts */
+.main-container {
+    -fx-font-family: "Segoe UI", "sans-serif";
+}
+
+.left-panel {
+    -fx-background-color: #0F172A;
+    /* Deep Navy */
+}
+
+.right-panel {
+    -fx-background-color: #F8FAFC;
+    /* Slate 50 / Very Light Blue */
+}
+
+/* Branding */
+.brand-icon {
+    -fx-font-size: 80px;
+    -fx-text-fill: white;
+}
+
+.brand-title {
+    -fx-font-size: 38px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.brand-tagline {
+    -fx-font-size: 16px;
+    -fx-text-fill: #94A3B8;
+    /* Slate 400 */
+}
+
+/* Login Card inside right panel */
+.glass-card {
+    -fx-background-color: white;
+    -fx-background-radius: 12px;
+    -fx-border-color: #E2E8F0;
+    /* Slate 200 */
+    -fx-border-radius: 12px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.08), 20, 0, 0, 10);
+}
+
+.card-header {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E293B;
+    /* Slate 800 */
+    -fx-padding: 0 0 15 0;
+}
+
+/* Inputs */
+.input-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #64748B;
+    /* Slate 500 */
+}
+
+.input-field {
+    -fx-font-size: 15px;
+    -fx-padding: 12px;
+    -fx-background-color: #F1F5F9;
+    /* Slate 100 */
+    -fx-background-radius: 8px;
+    -fx-border-color: #CBD5E1;
+    /* Slate 300 */
+    -fx-border-radius: 8px;
+    -fx-prompt-text-fill: #94A3B8;
+}
+
+.input-field:focused {
+    -fx-border-color: #0D9488;
+    /* Teal 600 */
+    -fx-background-color: white;
+}
+
+/* Buttons */
+.btn-primary {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-background-color: #0D9488;
+    /* Teal 600 */
+    -fx-background-radius: 8px;
+    -fx-padding: 12px;
+    -fx-cursor: hand;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #0F766E;
+    /* Teal 700 */
+}
+
+.btn-secondary {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0D9488;
+    -fx-background-color: transparent;
+    -fx-border-color: #0D9488;
+    -fx-border-radius: 8px;
+    -fx-padding: 12px;
+    -fx-cursor: hand;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: #F0FDFA;
+    /* Teal 50 */
+}
+
+.error-label {
+    -fx-text-fill: #EF4444;
+    /* Red 500 */
+    -fx-font-size: 13px;
+    -fx-padding: 10 0 0 0;
+}

@@ -2,6 +2,7 @@ package banking.model;
 
 public class Customer {
     private int customerId;
+    private int userId;
     private String name;
     private String phone;
     private String email;
@@ -13,8 +14,17 @@ public class Customer {
         this.phone = phone;
         this.email = email;
     }
+    
+    public Customer(int userId, String name, String phone, String email) {
+        this.userId = userId;
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+    }
 
     // Getters and Setters
+    public int getUserId() { return userId; }
+    public void setUserId(int userId) { this.userId = userId; }
     public int getCustomerId() { return customerId; }
     public void setCustomerId(int customerId) { this.customerId = customerId; }
     public String getName() { return name; }

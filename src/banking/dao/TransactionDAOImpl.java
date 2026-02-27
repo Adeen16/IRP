@@ -50,7 +50,7 @@ public class TransactionDAOImpl implements TransactionDAO {
     @Override
     public List<Transaction> findByAccountNumber(String accountNumber) {
         List<Transaction> list = new ArrayList<>();
-        String sql = "SELECT * FROM transaction WHERE account_number = ? ORDER BY created_at DESC";
+        String sql = "SELECT transaction_id, account_number, type, amount, created_at FROM transaction WHERE account_number = ? ORDER BY created_at DESC";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, accountNumber);
@@ -68,7 +68,7 @@ public class TransactionDAOImpl implements TransactionDAO {
     @Override
     public List<Transaction> findAll() {
         List<Transaction> list = new ArrayList<>();
-        String sql = "SELECT * FROM transaction ORDER BY created_at DESC";
+        String sql = "SELECT transaction_id, account_number, type, amount, created_at FROM transaction ORDER BY created_at DESC";
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -105,7 +105,7 @@ public class TransactionDAOImpl implements TransactionDAO {
     @Override
     public List<Transaction> findByAccountNumber(String accountNumber, int limit) {
         List<Transaction> list = new ArrayList<>();
-        String sql = "SELECT * FROM transaction WHERE account_number = ? ORDER BY created_at DESC LIMIT ?";
+        String sql = "SELECT transaction_id, account_number, type, amount, created_at FROM transaction WHERE account_number = ? ORDER BY created_at DESC LIMIT ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, accountNumber);
@@ -124,7 +124,7 @@ public class TransactionDAOImpl implements TransactionDAO {
     @Override
     public List<Transaction> findByAccountNumberAndDateRange(String accountNumber, LocalDate start, LocalDate end) {
         List<Transaction> list = new ArrayList<>();
-        String sql = "SELECT * FROM transaction WHERE account_number = ? AND DATE(created_at) BETWEEN ? AND ? ORDER BY created_at DESC";
+        String sql = "SELECT transaction_id, account_number, type, amount, created_at FROM transaction WHERE account_number = ? AND DATE(created_at) BETWEEN ? AND ? ORDER BY created_at DESC";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, accountNumber);
@@ -144,7 +144,7 @@ public class TransactionDAOImpl implements TransactionDAO {
     @Override
     public List<Transaction> findByDateRange(LocalDate start, LocalDate end) {
         List<Transaction> list = new ArrayList<>();
-        String sql = "SELECT * FROM transaction WHERE DATE(created_at) BETWEEN ? AND ? ORDER BY created_at DESC";
+        String sql = "SELECT transaction_id, account_number, type, amount, created_at FROM transaction WHERE DATE(created_at) BETWEEN ? AND ? ORDER BY created_at DESC";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setDate(1, Date.valueOf(start));

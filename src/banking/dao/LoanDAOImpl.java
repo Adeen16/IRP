@@ -31,7 +31,7 @@ public class LoanDAOImpl implements LoanDAO {
     @Override
     public List<Loan> getLoansByCustomer(int customerId) {
         List<Loan> loans = new ArrayList<>();
-        String query = "SELECT * FROM loans WHERE customer_id = ? ORDER BY created_at DESC";
+        String query = "SELECT loan_id, customer_id, amount, term_months, interest_rate, status, emi, created_at FROM loans WHERE customer_id = ? ORDER BY created_at DESC";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -51,7 +51,7 @@ public class LoanDAOImpl implements LoanDAO {
     @Override
     public List<Loan> getPendingLoans() {
         List<Loan> loans = new ArrayList<>();
-        String query = "SELECT * FROM loans WHERE status = 'PENDING' ORDER BY created_at ASC";
+        String query = "SELECT loan_id, customer_id, amount, term_months, interest_rate, status, emi, created_at FROM loans WHERE status = 'PENDING' ORDER BY created_at ASC";
         
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement();
