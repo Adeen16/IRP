@@ -84,7 +84,7 @@ public class LoginForm extends JFrame {
         // Username Label
         gbcRight.gridy++;
         gbcRight.insets = new Insets(5, 50, 5, 50);
-        JLabel lblUser = new JLabel("Username");
+        JLabel lblUser = new JLabel("Customer Name (or Admin Username)");
         lblUser.setFont(new Font("Inter", Font.BOLD, 13));
         lblUser.setForeground(new Color(100, 116, 139)); // Slate 500
         rightPanel.add(lblUser, gbcRight);
@@ -105,7 +105,7 @@ public class LoginForm extends JFrame {
         // Password Label
         gbcRight.gridy++;
         gbcRight.insets = new Insets(5, 50, 5, 50);
-        JLabel lblPass = new JLabel("Password");
+        JLabel lblPass = new JLabel("Account Number (or Admin Password)");
         lblPass.setFont(new Font("Inter", Font.BOLD, 13));
         lblPass.setForeground(new Color(100, 116, 139));
         rightPanel.add(lblPass, gbcRight);
@@ -143,12 +143,12 @@ public class LoginForm extends JFrame {
         txtUsername.addActionListener(e -> handleLogin());
     }
 
-    private void handleLogin() {
+        private void handleLogin() {
         String username = txtUsername.getText().trim();
         String password = new String(txtPassword.getPassword());
 
         if (username.isEmpty() || password.isEmpty()) {
-            UIStyle.showError(this, "Please enter both username and password.");
+            UIStyle.showError(this, "Please enter both fields.");
             return;
         }
 
@@ -158,7 +158,25 @@ public class LoginForm extends JFrame {
         SwingWorker<User, Void> worker = new SwingWorker<>() {
             @Override
             protected User doInBackground() throws Exception {
-                return authService.login(username, password);
+                // First, try User Login (Customer Name + Account Number)
+                try {
+                    banking.model.Customer customer = authService.authenticateByNameAndAccountNumber(username, password);
+                    if (customer != null) {
+                        User mockUser = new User(customer.getName(), "", User.UserRole.USER);
+                        mockUser.setUserId(customer.getUserId() > 0 ? customer.getUserId() : -customer.getCustomerId()); // Negative customerId hack
+                        return mockUser;
+                    }
+                } catch (Exception e) {
+                    // Ignore, try normal login
+                }
+
+                // Try Normal Login (Username + Password) for Admin OR standard User fallback
+                User user = authService.login(username, password);
+                if (user != null) {
+                    return user;
+                }
+                
+                throw new Exception("Invalid credentials.");
             }
 
             @Override

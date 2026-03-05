@@ -7,6 +7,7 @@ public interface CustomerDAO {
     Customer findByUserId(int userId);
     List<Customer> findAll();
     List<Customer> findByName(String name);
+    Customer getCustomerByAccountNumber(String accountNumber);
     boolean update(Customer customer);
     boolean delete(int customerId);
 }

@@ -6,6 +6,7 @@ public class Customer {
     private String name;
     private String phone;
     private String email;
+    private int cibilScore = 700;
 
     public Customer() {}
     
@@ -33,4 +34,6 @@ public class Customer {
     public void setPhone(String phone) { this.phone = phone; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+    public int getCibilScore() { return cibilScore; }
+    public void setCibilScore(int cibilScore) { this.cibilScore = cibilScore; }
 }

@@ -124,27 +124,35 @@ public class CustomerFormDialog extends JDialog {
             return;
         }
 
-        new SwingWorker<Void, Void>() {
+        new SwingWorker<Customer, Void>() {
             @Override
-            protected Void doInBackground() throws Exception {
+            protected Customer doInBackground() throws Exception {
                 if (existing == null) {
-                    bankingService.createCustomer(name, phone, email, "");
+                    return bankingService.createCustomer(name, phone, email, "");
                 } else {
                     existing.setName(name);
                     existing.setPhone(phone);
                     existing.setEmail(email);
                     bankingService.updateCustomer(existing);
+                    return existing;
                 }
-                return null;
             }
 
             @Override
             protected void done() {
                 try {
-                    get();
+                    Customer returnedCust = get();
                     success = true;
-                    UIStyle.showSuccess(CustomerFormDialog.this,
-                            existing == null ? "Customer added successfully!" : "Customer updated!");
+                    if (existing == null) {
+                        String[] parts = returnedCust.getPhone().split("\\|\\|");
+                        String generatedUsername = parts.length > 1 ? parts[1] : "N/A";
+                        String generatedPassword = parts.length > 2 ? parts[2] : "N/A";
+                        JOptionPane.showMessageDialog(CustomerFormDialog.this,
+                                "Customer added successfully!\n\nAuto-generated credentials:\nUsername: " + generatedUsername + "\nPassword: " + generatedPassword,
+                                "Success", JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                         UIStyle.showSuccess(CustomerFormDialog.this, "Customer updated!");
+                    }
                     dispose();
                 } catch (Exception e) {
                     UIStyle.showError(CustomerFormDialog.this, e.getMessage());

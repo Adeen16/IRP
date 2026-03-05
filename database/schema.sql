@@ -1,53 +1,60 @@
 -- Banking Management System Database Schema
--- Strict Requirements for Phase 1
-
-DROP DATABASE IF EXISTS banking_system;
-CREATE DATABASE banking_system;
-USE banking_system;
+-- Converted for SQLite Persistence Layer
 
 -- Users table for authentication
-CREATE TABLE users (
-    user_id INT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    role ENUM('ADMIN', 'USER') NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE IF NOT EXISTS users (
+    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    role TEXT CHECK(role IN ('ADMIN', 'USER')) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- customer table
-CREATE TABLE customer (
-    customer_id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT UNIQUE,
-    name VARCHAR(100) NOT NULL,
-    phone VARCHAR(20),
-    email VARCHAR(100),
+CREATE TABLE IF NOT EXISTS customer (
+    customer_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER UNIQUE,
+    name TEXT NOT NULL,
+    phone TEXT,
+    email TEXT,
+    cibil_score INTEGER DEFAULT 700,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
+-- loan_requests table
+CREATE TABLE IF NOT EXISTS loan_requests (
+    loan_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    customer_id INTEGER,
+    amount REAL,
+    status TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES customer(customer_id) ON DELETE CASCADE
+);
+
 -- account table
-CREATE TABLE account (
-    account_number VARCHAR(20) PRIMARY KEY,
-    customer_id INT NOT NULL,
-    balance DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+CREATE TABLE IF NOT EXISTS account (
+    account_number TEXT PRIMARY KEY,
+    customer_id INTEGER NOT NULL,
+    balance REAL NOT NULL DEFAULT 0.00,
     FOREIGN KEY (customer_id) REFERENCES customer(customer_id) ON DELETE CASCADE
 );
 
 -- transaction table
-CREATE TABLE transaction (
-    transaction_id INT PRIMARY KEY AUTO_INCREMENT,
-    account_number VARCHAR(20) NOT NULL,
-    type ENUM('DEPOSIT', 'WITHDRAW', 'TRANSFER') NOT NULL,
-    amount DECIMAL(15,2) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+CREATE TABLE IF NOT EXISTS "transaction" (
+    transaction_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    account_number TEXT NOT NULL,
+    type TEXT CHECK(type IN ('DEPOSIT', 'WITHDRAW', 'TRANSFER')) NOT NULL,
+    amount REAL NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (account_number) REFERENCES account(account_number) ON DELETE CASCADE
 );
 
 -- Insert default admin user (password: admin123)
 -- Password is hashed using SHA-256
-INSERT INTO users (username, password_hash, role) VALUES
-('admin', '240be518fabd2724ddb6f04eeb9f7c7b21c4e5e1b8f8e3d5a0c1b2d3e4f5a6b7', 'ADMIN');
+INSERT OR IGNORE INTO users (username, password_hash, role) VALUES
+('admin', '240be518fabd2724ddb6f04eebf74c720a948d7e831c08c8fa822809f', 'ADMIN');
 
 -- Insert default user user (password: user123)
 -- SHA-256 hash for user123: e606e38b0d8c19b24cf0ee3808183162ea7cd63ff7912dbb22b5e803286b4446
-INSERT INTO users (username, password_hash, role) VALUES
+INSERT OR IGNORE INTO users (username, password_hash, role) VALUES
 ('user', 'e606e38b0d8c19b24cf0ee3808183162ea7cd63ff7912dbb22b5e803286b4446', 'USER');

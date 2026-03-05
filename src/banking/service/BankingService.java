@@ -45,10 +45,34 @@ public class BankingService {
             throw new ValidationException(validation.getMessage());
         }
         
+        // Auto-generate User Login
+        String baseUsername = email.split("@")[0].replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+        String uniqueUsername = baseUsername;
+        int counter = 1;
+        while (userDAO.findByUsername(uniqueUsername) != null) {
+            uniqueUsername = baseUsername + counter;
+            counter++;
+        }
+        
+        String generatedPassword = "user123";
+        banking.model.User user = new banking.model.User();
+        user.setUsername(uniqueUsername);
+        user.setPasswordHash(banking.util.HashUtil.hashPassword(generatedPassword));
+        user.setRole(banking.model.User.UserRole.USER);
+        
+        boolean userCreated = userDAO.create(user);
+        if (!userCreated || user.getUserId() <= 0) {
+            throw new BankingException("Failed to generate user login credentials.");
+        }
+        
         Customer customer = new Customer(name, phone, email);
-        // Note: address is not in the schema yet, but accepted in signature for future-proofing
+        customer.setUserId(user.getUserId());
         int customerId = customerDAO.create(customer);
         customer.setCustomerId(customerId);
+        
+        // Temporarily store generated credentials in the object so the UI can read it
+        customer.setPhone(phone + "||" + uniqueUsername + "||" + generatedPassword); 
+        
         return customer;
     }
     
@@ -289,6 +313,9 @@ public class BankingService {
     }
     
     public Customer getCustomerByUserId(int userId) throws Exception {
+        if (userId < 0) {
+            return customerDAO.findById(-userId);
+        }
         return customerDAO.findByUserId(userId);
     }
     

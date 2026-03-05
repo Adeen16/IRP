@@ -11,15 +11,13 @@ public class LoanDAOImpl implements LoanDAO {
 
     @Override
     public boolean insertLoan(Loan loan) {
-        String query = "INSERT INTO loans (customer_id, amount, interest_rate, term_months, status) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO loan_requests (customer_id, amount, status) VALUES (?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             
             stmt.setInt(1, loan.getCustomerId());
             stmt.setBigDecimal(2, loan.getAmount());
-            stmt.setBigDecimal(3, loan.getInterestRate());
-            stmt.setInt(4, loan.getTermMonths());
-            stmt.setString(5, loan.getStatus() != null ? loan.getStatus() : "PENDING");
+            stmt.setString(3, loan.getStatus() != null ? loan.getStatus() : "PENDING");
             
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -31,7 +29,7 @@ public class LoanDAOImpl implements LoanDAO {
     @Override
     public List<Loan> getLoansByCustomer(int customerId) {
         List<Loan> loans = new ArrayList<>();
-        String query = "SELECT loan_id, customer_id, amount, term_months, interest_rate, status, emi, created_at FROM loans WHERE customer_id = ? ORDER BY created_at DESC";
+        String query = "SELECT loan_id, customer_id, amount, status, timestamp as created_at FROM loan_requests WHERE customer_id = ? ORDER BY timestamp DESC";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -51,7 +49,7 @@ public class LoanDAOImpl implements LoanDAO {
     @Override
     public List<Loan> getPendingLoans() {
         List<Loan> loans = new ArrayList<>();
-        String query = "SELECT loan_id, customer_id, amount, term_months, interest_rate, status, emi, created_at FROM loans WHERE status = 'PENDING' ORDER BY created_at ASC";
+        String query = "SELECT loan_id, customer_id, amount, status, timestamp as created_at FROM loan_requests WHERE status = 'PENDING' ORDER BY timestamp ASC";
         
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement();
@@ -68,7 +66,7 @@ public class LoanDAOImpl implements LoanDAO {
 
     @Override
     public boolean updateLoanStatus(int loanId, String status) {
-        String query = "UPDATE loans SET status = ? WHERE loan_id = ?";
+        String query = "UPDATE loan_requests SET status = ? WHERE loan_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             
@@ -87,8 +85,8 @@ public class LoanDAOImpl implements LoanDAO {
         loan.setLoanId(rs.getInt("loan_id"));
         loan.setCustomerId(rs.getInt("customer_id"));
         loan.setAmount(rs.getBigDecimal("amount"));
-        loan.setInterestRate(rs.getBigDecimal("interest_rate"));
-        loan.setTermMonths(rs.getInt("term_months"));
+        loan.setInterestRate(new java.math.BigDecimal("0.0"));
+        loan.setTermMonths(12);
         loan.setStatus(rs.getString("status"));
         loan.setCreatedAt(rs.getTimestamp("created_at"));
         return loan;

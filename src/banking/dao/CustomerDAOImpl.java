@@ -40,7 +40,7 @@ public class CustomerDAOImpl implements CustomerDAO {
 
     @Override
     public Customer findById(int customerId) {
-        String sql = "SELECT customer_id, user_id, name, phone, email FROM customer WHERE customer_id = ?";
+        String sql = "SELECT customer_id, user_id, name, phone, email, cibil_score FROM customer WHERE customer_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, customerId);
@@ -52,6 +52,7 @@ public class CustomerDAOImpl implements CustomerDAO {
                     c.setName(rs.getString("name"));
                     c.setPhone(rs.getString("phone"));
                     c.setEmail(rs.getString("email"));
+                    c.setCibilScore(rs.getInt("cibil_score"));
                     return c;
                 }
             }
@@ -62,7 +63,7 @@ public class CustomerDAOImpl implements CustomerDAO {
     }
 
     public Customer findByUserId(int userId) {
-        String sql = "SELECT customer_id, user_id, name, phone, email FROM customer WHERE user_id = ?";
+        String sql = "SELECT customer_id, user_id, name, phone, email, cibil_score FROM customer WHERE user_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
@@ -74,6 +75,7 @@ public class CustomerDAOImpl implements CustomerDAO {
                     c.setName(rs.getString("name"));
                     c.setPhone(rs.getString("phone"));
                     c.setEmail(rs.getString("email"));
+                    c.setCibilScore(rs.getInt("cibil_score"));
                     return c;
                 }
             }
@@ -86,7 +88,7 @@ public class CustomerDAOImpl implements CustomerDAO {
     @Override
     public List<Customer> findAll() {
         List<Customer> list = new ArrayList<>();
-        String sql = "SELECT customer_id, user_id, name, phone, email FROM customer";
+        String sql = "SELECT customer_id, user_id, name, phone, email, cibil_score FROM customer";
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -97,6 +99,7 @@ public class CustomerDAOImpl implements CustomerDAO {
                 c.setName(rs.getString("name"));
                 c.setPhone(rs.getString("phone"));
                 c.setEmail(rs.getString("email"));
+                    c.setCibilScore(rs.getInt("cibil_score"));
                 list.add(c);
             }
         } catch (SQLException e) {
@@ -108,7 +111,7 @@ public class CustomerDAOImpl implements CustomerDAO {
     @Override
     public List<Customer> findByName(String name) {
         List<Customer> list = new ArrayList<>();
-        String sql = "SELECT customer_id, user_id, name, phone, email FROM customer WHERE name LIKE ?";
+        String sql = "SELECT customer_id, user_id, name, phone, email, cibil_score FROM customer WHERE name LIKE ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, "%" + name + "%");
@@ -120,6 +123,7 @@ public class CustomerDAOImpl implements CustomerDAO {
                     c.setName(rs.getString("name"));
                     c.setPhone(rs.getString("phone"));
                     c.setEmail(rs.getString("email"));
+                    c.setCibilScore(rs.getInt("cibil_score"));
                     list.add(c);
                 }
             }
@@ -129,9 +133,36 @@ public class CustomerDAOImpl implements CustomerDAO {
         return list;
     }
 
+
+    @Override
+    public Customer getCustomerByAccountNumber(String accountNumber) {
+        String sql = "SELECT c.customer_id, c.user_id, c.name, c.phone, c.email, c.cibil_score " +
+                     "FROM customer c JOIN account a ON c.customer_id = a.customer_id " +
+                     "WHERE a.account_number = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, accountNumber);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Customer c = new Customer();
+                    c.setCustomerId(rs.getInt("customer_id"));
+                    c.setUserId(rs.getInt("user_id"));
+                    c.setName(rs.getString("name"));
+                    c.setPhone(rs.getString("phone"));
+                    c.setEmail(rs.getString("email"));
+                    c.setCibilScore(rs.getInt("cibil_score"));
+                    return c;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     @Override
     public boolean update(Customer customer) {
-        String sql = "UPDATE customer SET user_id = ?, name = ?, phone = ?, email = ? WHERE customer_id = ?";
+        String sql = "UPDATE customer SET user_id = ?, name = ?, phone = ?, email = ?, cibil_score = ? WHERE customer_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             if (customer.getUserId() > 0) {
@@ -142,7 +173,8 @@ public class CustomerDAOImpl implements CustomerDAO {
             stmt.setString(2, customer.getName());
             stmt.setString(3, customer.getPhone());
             stmt.setString(4, customer.getEmail());
-            stmt.setInt(5, customer.getCustomerId());
+            stmt.setInt(5, customer.getCibilScore());
+            stmt.setInt(6, customer.getCustomerId());
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();

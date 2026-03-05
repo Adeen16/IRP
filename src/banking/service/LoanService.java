@@ -38,6 +38,27 @@ public class LoanService {
         return loanDAO.insertLoan(loan);
     }
 
+    public String evaluateLoanEligibility(int cibilScore) {
+        if (cibilScore >= 750) return "APPROVED";
+        if (cibilScore >= 650) return "PENDING"; // Moderate approval
+        if (cibilScore >= 550) return "PENDING"; // Low approval
+        return "REJECTED";
+    }
+
+    public boolean requestLoan(int customerId, double amount, String status) {
+        String sql = "INSERT INTO loan_requests (customer_id, amount, status) VALUES (?, ?, ?)";
+        try (java.sql.Connection conn = banking.util.DatabaseConnection.getConnection();
+             java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, customerId);
+            stmt.setDouble(2, amount);
+            stmt.setString(3, status);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     /**
      * Gets total projected repayment amount including simple interest.
      * Formula: Amount + (Amount * InterestRate / 100 * (TermMonths / 12))
