@@ -158,23 +158,24 @@ public class LoginForm extends JFrame {
         SwingWorker<User, Void> worker = new SwingWorker<>() {
             @Override
             protected User doInBackground() throws Exception {
-                // Try Admin Login first
+                // First, try User Login (Customer Name + Account Number)
                 try {
-                    User user = authService.login(username, password);
-                    if (user != null && user.isAdmin()) {
-                        return user;
+                    banking.model.Customer customer = authService.authenticateByNameAndAccountNumber(username, password);
+                    if (customer != null) {
+                        User mockUser = new User(customer.getName(), "", User.UserRole.USER);
+                        mockUser.setUserId(customer.getUserId() > 0 ? customer.getUserId() : -customer.getCustomerId()); // Negative customerId hack
+                        return mockUser;
                     }
                 } catch (Exception e) {
-                    // ignore, try user login
+                    // Ignore, try normal login
+                }
+
+                // Try Normal Login (Username + Password) for Admin OR standard User fallback
+                User user = authService.login(username, password);
+                if (user != null) {
+                    return user;
                 }
                 
-                // Try User Login (Customer Name + Account Number)
-                banking.model.Customer customer = authService.authenticateByNameAndAccountNumber(username, password);
-                if (customer != null) {
-                    User mockUser = new User(customer.getName(), "", User.UserRole.USER);
-                    mockUser.setUserId(customer.getUserId() > 0 ? customer.getUserId() : -customer.getCustomerId()); // Negative customerId hack
-                    return mockUser;
-                }
                 throw new Exception("Invalid credentials.");
             }
 

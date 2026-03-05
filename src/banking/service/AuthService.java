@@ -100,11 +100,27 @@ public class AuthService {
         banking.dao.CustomerDAO customerDAO = new banking.dao.CustomerDAOImpl();
         banking.model.Customer customer = customerDAO.getCustomerByAccountNumber(accountNumber);
         
-        if (customer != null && customer.getName().equalsIgnoreCase(customerName.trim())) {
-            return customer;
-        } else {
-            throw new Exception("Invalid Customer Name or Account Number.");
+        if (customer != null) {
+            String dbName = customer.getName().trim();
+            String username = "";
+            if (customer.getUserId() > 0) {
+                User u = userDAO.findById(customer.getUserId());
+                if (u != null) username = u.getUsername();
+            }
+            String emailPrefix = customer.getEmail() != null && customer.getEmail().contains("@") 
+                                 ? customer.getEmail().split("@")[0] : "";
+            
+            String input = customerName.trim();
+            
+            if (dbName.equalsIgnoreCase(input) || 
+                (!username.isEmpty() && username.equalsIgnoreCase(input)) || 
+                (!emailPrefix.isEmpty() && emailPrefix.equalsIgnoreCase(input)) ||
+                input.toLowerCase().contains(dbName.toLowerCase()) ||
+                dbName.toLowerCase().contains(input.toLowerCase())) {
+                return customer;
+            }
         }
+        throw new Exception("Invalid Customer Name or Account Number.");
     }
 
     public List<User> getAllUsers() throws Exception {
