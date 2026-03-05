@@ -17,19 +17,19 @@ import java.util.List;
 public class AccountFormDialog extends JDialog {
     private final BankingService bankingService;
     private boolean success = false;
-    private JComboBox<CustomerItem> customerCombo;
-
+    private JTextField txtName;
+    private JTextField txtPhone;
+    private JTextField txtEmail;
     private JTextField txtInitialDeposit;
 
     public AccountFormDialog(Window parent, BankingService bankingService) {
         super(parent, "Create New Account", ModalityType.APPLICATION_MODAL);
         this.bankingService = bankingService;
         initializeUI();
-        loadCustomers();
     }
 
     private void initializeUI() {
-        setSize(450, 380);
+        setSize(450, 450);
         setLocationRelativeTo(getOwner());
         setResizable(false);
 
@@ -45,20 +45,34 @@ public class AccountFormDialog extends JDialog {
 
         // Title
         gbc.gridy = 0;
-        JLabel lblTitle = new JLabel("New Account");
+        JLabel lblTitle = new JLabel("New Account & Customer");
         lblTitle.setFont(UIStyle.HEADER_FONT);
         lblTitle.setForeground(UIStyle.TEXT_COLOR);
         panel.add(lblTitle, gbc);
 
-        // Customer selection
+        // Customer Name
         gbc.gridy++;
-        panel.add(createLabel("Customer *"), gbc);
+        panel.add(createLabel("Customer Name *"), gbc);
         gbc.gridy++;
-        customerCombo = new JComboBox<>();
-        UIStyle.styleComboBox(customerCombo);
-        panel.add(customerCombo, gbc);
+        txtName = new JTextField();
+        UIStyle.styleTextField(txtName);
+        panel.add(txtName, gbc);
 
+        // Phone
+        gbc.gridy++;
+        panel.add(createLabel("Phone Number *"), gbc);
+        gbc.gridy++;
+        txtPhone = new JTextField();
+        UIStyle.styleTextField(txtPhone);
+        panel.add(txtPhone, gbc);
 
+        // Email
+        gbc.gridy++;
+        panel.add(createLabel("Email Address *"), gbc);
+        gbc.gridy++;
+        txtEmail = new JTextField();
+        UIStyle.styleTextField(txtEmail);
+        panel.add(txtEmail, gbc);
 
         // Initial deposit
         gbc.gridy++;
@@ -96,36 +110,15 @@ public class AccountFormDialog extends JDialog {
         return lbl;
     }
 
-    private void loadCustomers() {
-        new SwingWorker<List<Customer>, Void>() {
-            @Override
-            protected List<Customer> doInBackground() throws Exception {
-                return bankingService.getAllCustomers();
-            }
-
-            @Override
-            protected void done() {
-                try {
-                    List<Customer> customers = get();
-                    customerCombo.removeAllItems();
-                    for (Customer c : customers) {
-                        customerCombo.addItem(new CustomerItem(c.getCustomerId(), c.getName()));
-                    }
-                } catch (Exception e) {
-                    UIStyle.showError(AccountFormDialog.this, "Failed to load customers: " + e.getMessage());
-                }
-            }
-        }.execute();
-    }
-
     private void handleCreate() {
-        CustomerItem selected = (CustomerItem) customerCombo.getSelectedItem();
-        if (selected == null) {
-            UIStyle.showError(this, "Please select a customer.");
+        String name = txtName.getText().trim();
+        String phone = txtPhone.getText().trim();
+        String email = txtEmail.getText().trim();
+
+        if (name.isEmpty() || phone.isEmpty() || email.isEmpty()) {
+            UIStyle.showError(this, "Please fill in all customer details.");
             return;
         }
-
-
 
         BigDecimal initialDeposit;
         try {
@@ -143,7 +136,15 @@ public class AccountFormDialog extends JDialog {
         new SwingWorker<String, Void>() {
             @Override
             protected String doInBackground() throws Exception {
-                Account account = bankingService.createAccount(selected.id);
+                banking.dao.CustomerDAO customerDAO = new banking.dao.CustomerDAOImpl();
+                Customer customer = new Customer(name, phone, email);
+                int customerId = customerDAO.create(customer);
+                
+                if (customerId <= 0) {
+                    throw new Exception("Failed to create customer.");
+                }
+
+                Account account = bankingService.createAccount(customerId);
                 if (deposit.compareTo(java.math.BigDecimal.ZERO) > 0) {
                     bankingService.deposit(account.getAccountNumber(), deposit);
                 }
@@ -155,8 +156,9 @@ public class AccountFormDialog extends JDialog {
                 try {
                     String accNum = get();
                     success = true;
-                    UIStyle.showSuccess(AccountFormDialog.this,
-                            "Account created: " + accNum);
+                    JOptionPane.showMessageDialog(AccountFormDialog.this,
+                            "Account & Customer created successfully!\n\nUser Access Credential (Account Number):\n" + accNum,
+                            "Success", JOptionPane.INFORMATION_MESSAGE);
                     dispose();
                 } catch (Exception e) {
                     UIStyle.showError(AccountFormDialog.this, e.getMessage());
@@ -167,21 +169,5 @@ public class AccountFormDialog extends JDialog {
 
     public boolean isSuccess() {
         return success;
-    }
-
-    /** Helper class for customer combo box items. */
-    private static class CustomerItem {
-        final int id;
-        final String name;
-
-        CustomerItem(int id, String name) {
-            this.id = id;
-            this.name = name;
-        }
-
-        @Override
-        public String toString() {
-            return name + " (ID: " + id + ")";
-        }
     }
 }

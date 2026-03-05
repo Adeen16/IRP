@@ -93,6 +93,20 @@ public class AuthService {
         return userDAO.updatePassword(userId, hashedNew);
     }
     
+    public banking.model.Customer authenticateByNameAndAccountNumber(String customerName, String accountNumber) throws Exception {
+        if (!banking.util.DatabaseConnection.testConnection()) {
+            throw new Exception("Database is Offline. Please start the MySQL service.");
+        }
+        banking.dao.CustomerDAO customerDAO = new banking.dao.CustomerDAOImpl();
+        banking.model.Customer customer = customerDAO.getCustomerByAccountNumber(accountNumber);
+        
+        if (customer != null && customer.getName().equalsIgnoreCase(customerName.trim())) {
+            return customer;
+        } else {
+            throw new Exception("Invalid Customer Name or Account Number.");
+        }
+    }
+
     public List<User> getAllUsers() throws Exception {
         return userDAO.findAll();
     }

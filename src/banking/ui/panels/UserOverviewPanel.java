@@ -25,6 +25,7 @@ public class UserOverviewPanel extends JPanel implements Refreshable {
     private JComboBox<String> accountSelector;
     private JLabel lblBalance;
     private JLabel lblWelcome;
+    private JLabel lblCibil;
 
     public UserOverviewPanel(User user, BankingService service, Frame parent) {
         this.currentUser = user;
@@ -47,10 +48,20 @@ public class UserOverviewPanel extends JPanel implements Refreshable {
         JPanel topRow = new JPanel(new BorderLayout());
         topRow.setBackground(Color.WHITE);
         
+        JPanel userInfoPanel = new JPanel(new GridLayout(2, 1, 0, 5));
+        userInfoPanel.setBackground(Color.WHITE);
+        
         lblWelcome = new JLabel("Welcome back, " + currentUser.getUsername());
         lblWelcome.setFont(UIStyle.HEADER_FONT);
         lblWelcome.setForeground(UIStyle.TEXT_COLOR);
-        topRow.add(lblWelcome, BorderLayout.WEST);
+        userInfoPanel.add(lblWelcome);
+        
+        lblCibil = new JLabel("CIBIL Score: Loading...");
+        lblCibil.setFont(UIStyle.LABEL_FONT);
+        lblCibil.setForeground(UIStyle.TEXT_LIGHT);
+        userInfoPanel.add(lblCibil);
+        
+        topRow.add(userInfoPanel, BorderLayout.WEST);
         
         accountSelector = new JComboBox<>();
         UIStyle.styleComboBox(accountSelector);
@@ -98,8 +109,18 @@ public class UserOverviewPanel extends JPanel implements Refreshable {
         btnTransfer.setPreferredSize(new Dimension(0, 60));
         btnTransfer.addActionListener(e -> openTransaction("TRANSFER"));
 
+        JButton btnLoan = new JButton("\uD83D\uDCB5  REQUEST LOAN");
+        UIStyle.styleButton(btnLoan, UIStyle.PRIMARY_COLOR);
+        btnLoan.setPreferredSize(new Dimension(0, 60));
+        btnLoan.addActionListener(e -> requestLoan());
+
+        JPanel bottomActions = new JPanel(new GridLayout(2, 1, 0, 15));
+        bottomActions.setBackground(UIStyle.BACKGROUND_COLOR);
+        bottomActions.add(btnTransfer);
+        bottomActions.add(btnLoan);
+        
         actionsWrapper.add(actionsGrid, BorderLayout.NORTH);
-        actionsWrapper.add(btnTransfer, BorderLayout.CENTER);
+        actionsWrapper.add(bottomActions, BorderLayout.CENTER);
         
         add(actionsWrapper, BorderLayout.CENTER);
     }
@@ -113,6 +134,25 @@ public class UserOverviewPanel extends JPanel implements Refreshable {
         TransactionDialog dialog = new TransactionDialog(parentFrame, acc, type);
         dialog.setVisible(true);
         onActivated(); // Refresh after transaction
+    }
+
+    private void requestLoan() {
+        String amountStr = JOptionPane.showInputDialog(parentFrame, "Enter loan amount:");
+        if (amountStr == null || amountStr.trim().isEmpty()) return;
+        
+        try {
+            double amount = Double.parseDouble(amountStr);
+            banking.model.Customer customer = bankingService.getCustomerByUserId(currentUser.getUserId());
+            if (customer == null) throw new Exception("Customer not found");
+            
+            banking.service.LoanService loanService = new banking.service.LoanService();
+            String status = loanService.evaluateLoanEligibility(customer.getCibilScore());
+            loanService.requestLoan(customer.getCustomerId(), amount, status);
+            
+            JOptionPane.showMessageDialog(parentFrame, "Loan request submitted.\nStatus: " + status);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(parentFrame, "Error: " + ex.getMessage());
+        }
     }
 
     private void updateBalanceDisplay(String accNum) {
@@ -145,6 +185,10 @@ public class UserOverviewPanel extends JPanel implements Refreshable {
             protected void done() {
                 try {
                     List<Account> accounts = get();
+                    banking.model.Customer customer = bankingService.getCustomerByUserId(currentUser.getUserId());
+                    if (customer != null) {
+                        lblCibil.setText("CIBIL Score: " + customer.getCibilScore());
+                    }
                     String selected = (String) accountSelector.getSelectedItem();
                     accountSelector.removeAllItems();
                     for (Account acc : accounts) {
