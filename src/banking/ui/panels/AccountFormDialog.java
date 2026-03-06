@@ -30,13 +30,15 @@ public class AccountFormDialog extends JDialog {
     }
 
     private void initializeUI() {
-        setSize(450, 550);
+        setSize(480, 700);
         setLocationRelativeTo(getOwner());
-        setResizable(false);
+        setResizable(true); // Allow resizing in case of smaller screens
+        setLayout(new BorderLayout());
 
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBackground(Color.WHITE);
-        panel.setBorder(new EmptyBorder(25, 25, 25, 25));
+        // --- Main Form Panel ---
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setBackground(Color.WHITE);
+        formPanel.setBorder(new EmptyBorder(25, 25, 25, 25));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -49,61 +51,70 @@ public class AccountFormDialog extends JDialog {
         JLabel lblTitle = new JLabel("New Account & Customer");
         lblTitle.setFont(UIStyle.HEADER_FONT);
         lblTitle.setForeground(UIStyle.TEXT_COLOR);
-        panel.add(lblTitle, gbc);
+        formPanel.add(lblTitle, gbc);
 
         // Customer Name
         gbc.gridy++;
-        panel.add(createLabel("Customer Name *"), gbc);
+        formPanel.add(createLabel("Customer Name *"), gbc);
         gbc.gridy++;
         txtName = new JTextField();
         UIStyle.styleTextField(txtName);
-        panel.add(txtName, gbc);
+        formPanel.add(txtName, gbc);
 
         // Phone
         gbc.gridy++;
-        panel.add(createLabel("Phone Number *"), gbc);
+        formPanel.add(createLabel("Phone Number *"), gbc);
         gbc.gridy++;
         txtPhone = new JTextField();
         UIStyle.styleTextField(txtPhone);
-        panel.add(txtPhone, gbc);
+        formPanel.add(txtPhone, gbc);
 
         // Email
         gbc.gridy++;
-        panel.add(createLabel("Email Address *"), gbc);
+        formPanel.add(createLabel("Email Address *"), gbc);
         gbc.gridy++;
         txtEmail = new JTextField();
         UIStyle.styleTextField(txtEmail);
-        panel.add(txtEmail, gbc);
+        formPanel.add(txtEmail, gbc);
 
         // Account Type
         gbc.gridy++;
-        panel.add(createLabel("Account Type *"), gbc);
+        formPanel.add(createLabel("Account Type *"), gbc);
         gbc.gridy++;
         cmbAccountType = new JComboBox<>(new String[]{"SAVINGS", "CURRENT"});
         cmbAccountType.setFont(UIStyle.SMALL_FONT);
-        panel.add(cmbAccountType, gbc);
+        formPanel.add(cmbAccountType, gbc);
 
         // Transaction PIN
         gbc.gridy++;
-        panel.add(createLabel("Transaction PIN (4-6 digits) *"), gbc);
+        formPanel.add(createLabel("Transaction PIN (4-6 digits) *"), gbc);
         gbc.gridy++;
         txtTransactionPin = new JPasswordField();
         UIStyle.styleTextField(txtTransactionPin);
-        panel.add(txtTransactionPin, gbc);
+        formPanel.add(txtTransactionPin, gbc);
 
         // Initial deposit
         gbc.gridy++;
-        panel.add(createLabel("Initial Deposit ($)"), gbc);
+        formPanel.add(createLabel("Initial Deposit ($)"), gbc);
         gbc.gridy++;
         txtInitialDeposit = new JTextField("0.00");
         UIStyle.styleTextField(txtInitialDeposit);
-        panel.add(txtInitialDeposit, gbc);
-
-        // Buttons
+        formPanel.add(txtInitialDeposit, gbc);
+        
+        // Spacer at the bottom of GridBag to push everything up
         gbc.gridy++;
-        gbc.insets = new Insets(20, 5, 5, 5);
-        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        btnPanel.setBackground(Color.WHITE);
+        gbc.weighty = 1.0;
+        formPanel.add(Box.createVerticalGlue(), gbc);
+
+        // Wrap form in ScrollPane
+        JScrollPane scrollPane = new JScrollPane(formPanel);
+        scrollPane.setBorder(null);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
+        // --- Button Panel ---
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
+        btnPanel.setBackground(new Color(248, 250, 252));
+        btnPanel.setBorder(new EmptyBorder(15, 25, 15, 25));
 
         JButton btnCancel = new JButton("Cancel");
         UIStyle.styleButton(btnCancel, UIStyle.SECONDARY_COLOR);
@@ -115,9 +126,9 @@ public class AccountFormDialog extends JDialog {
 
         btnPanel.add(btnCancel);
         btnPanel.add(btnCreate);
-        panel.add(btnPanel, gbc);
 
-        add(panel);
+        add(scrollPane, BorderLayout.CENTER);
+        add(btnPanel, BorderLayout.SOUTH);
     }
 
     private JLabel createLabel(String text) {
@@ -166,15 +177,14 @@ public class AccountFormDialog extends JDialog {
         new SwingWorker<String, Void>() {
             @Override
             protected String doInBackground() throws Exception {
-                banking.dao.CustomerDAO customerDAO = new banking.dao.CustomerDAOImpl();
-                Customer customer = new Customer(name, phone, email);
-                int customerId = customerDAO.create(customer);
+                // Use BankingService to ensure User record and credentials are created
+                Customer customer = bankingService.createCustomer(name, phone, email, "");
                 
-                if (customerId <= 0) {
-                    throw new Exception("Failed to create customer.");
+                if (customer == null || customer.getCustomerId() <= 0) {
+                    throw new Exception("Failed to create customer and user login.");
                 }
 
-                Account account = bankingService.createAccount(customerId, acctType, transactionPin);
+                Account account = bankingService.createAccount(customer.getCustomerId(), acctType, transactionPin);
                 if (deposit.compareTo(BigDecimal.ZERO) > 0) {
                     // userId 0 indicates admin/system deposit during account creation
                     bankingService.deposit(account.getAccountNumber(), deposit, 0);
