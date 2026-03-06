@@ -92,9 +92,11 @@ public class DatabaseConnection {
 
     private static void applySchemaUpgrades(Connection conn) {
         try (Statement stmt = conn.createStatement()) {
+            // Create loan table with account_number column
             stmt.execute("CREATE TABLE IF NOT EXISTS loan (" +
                 "loan_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "customer_id INTEGER NOT NULL, " +
+                "account_number TEXT, " +
                 "loan_amount REAL NOT NULL, " +
                 "interest_rate REAL NOT NULL DEFAULT 0, " +
                 "loan_duration INTEGER NOT NULL, " +
@@ -104,10 +106,25 @@ public class DatabaseConnection {
                 "created_at DATETIME DEFAULT CURRENT_TIMESTAMP, " +
                 "FOREIGN KEY (customer_id) REFERENCES customer(customer_id) ON DELETE CASCADE)");
 
+            // Migrate loan_requests to loan if exists
             if (tableExists(conn, "loan_requests")) {
                 stmt.execute("INSERT INTO loan (customer_id, loan_amount, interest_rate, loan_duration, emi, loan_type, status, created_at) " +
                     "SELECT lr.customer_id, lr.amount, 0, 12, 0, 'PERSONAL', lr.status, lr.timestamp " +
                     "FROM loan_requests lr WHERE NOT EXISTS (SELECT 1 FROM loan l WHERE l.customer_id = lr.customer_id AND l.created_at = lr.timestamp)");
+            }
+
+            // Add account_number column if not exists (for existing databases)
+            try {
+                stmt.execute("ALTER TABLE loan ADD COLUMN account_number TEXT");
+            } catch (SQLException e) {
+                // Column may already exist, ignore
+            }
+
+            // Add UNIQUE constraint on phone column if not exists
+            try {
+                stmt.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_customer_phone ON customer(phone)");
+            } catch (SQLException e) {
+                System.err.println("Note: Could not create unique index on phone - " + e.getMessage());
             }
         } catch (SQLException e) {
             System.err.println("Failed to apply schema upgrades: " + e.getMessage());

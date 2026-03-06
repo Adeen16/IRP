@@ -83,27 +83,41 @@ public class TransactionDAOImpl implements TransactionDAO {
 
     @Override
     public void create(Transaction transaction) {
-        String sql = "INSERT INTO \"transaction\" (account_number, type, amount, performed_by) VALUES (?, ?, ?, ?)";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setString(1, transaction.getAccountNumber());
-            stmt.setString(2, transaction.getType().name());
-            stmt.setBigDecimal(3, transaction.getAmount());
-            if (transaction.getPerformedBy() > 0) {
-                stmt.setInt(4, transaction.getPerformedBy());
-            } else {
-                stmt.setNull(4, java.sql.Types.INTEGER);
+        create(null, transaction);
+    }
+
+    @Override
+    public void create(Connection conn, Transaction transaction) {
+        boolean externalConn = conn != null;
+        try {
+            if (!externalConn) {
+                conn = DatabaseConnection.getConnection();
             }
-            int affected = stmt.executeUpdate();
-            if (affected > 0) {
-                try (ResultSet rs = stmt.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        transaction.setTransactionId(rs.getInt(1));
+            String sql = "INSERT INTO \"transaction\" (account_number, type, amount, performed_by) VALUES (?, ?, ?, ?)";
+            try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                stmt.setString(1, transaction.getAccountNumber());
+                stmt.setString(2, transaction.getType().name());
+                stmt.setBigDecimal(3, transaction.getAmount());
+                if (transaction.getPerformedBy() > 0) {
+                    stmt.setInt(4, transaction.getPerformedBy());
+                } else {
+                    stmt.setNull(4, java.sql.Types.INTEGER);
+                }
+                int affected = stmt.executeUpdate();
+                if (affected > 0) {
+                    try (ResultSet rs = stmt.getGeneratedKeys()) {
+                        if (rs.next()) {
+                            transaction.setTransactionId(rs.getInt(1));
+                        }
                     }
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            if (conn != null && !externalConn) {
+                DatabaseConnection.releaseConnection(conn);
+            }
         }
     }
 

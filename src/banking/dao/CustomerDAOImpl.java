@@ -194,4 +194,29 @@ public class CustomerDAOImpl implements CustomerDAO {
         }
         return false;
     }
+
+    @Override
+    public Customer findByPhoneOrEmail(String phone, String email) {
+        String sql = "SELECT customer_id, user_id, name, phone, email, cibil_score FROM customer WHERE phone = ? OR email = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, phone);
+            stmt.setString(2, email);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Customer c = new Customer();
+                    c.setCustomerId(rs.getInt("customer_id"));
+                    c.setUserId(rs.getInt("user_id"));
+                    c.setName(rs.getString("name"));
+                    c.setPhone(rs.getString("phone"));
+                    c.setEmail(rs.getString("email"));
+                    c.setCibilScore(rs.getInt("cibil_score"));
+                    return c;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

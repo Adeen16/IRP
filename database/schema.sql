@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS customer (
     customer_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER UNIQUE,
     name TEXT NOT NULL,
-    phone TEXT,
+    phone TEXT UNIQUE,
     email TEXT,
     cibil_score INTEGER DEFAULT 700,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS customer (
 CREATE TABLE IF NOT EXISTS loan (
     loan_id INTEGER PRIMARY KEY AUTOINCREMENT,
     customer_id INTEGER NOT NULL,
+    account_number TEXT,
     loan_amount REAL NOT NULL,
     interest_rate REAL NOT NULL DEFAULT 0,
     loan_duration INTEGER NOT NULL,

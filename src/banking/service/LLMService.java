@@ -41,20 +41,30 @@ public class LLMService {
     }
 
     /**
-     * System prompt that constrains the LLM to a safe banking assistant role.
+     * System prompt that constrains the LLM to a professional fintech advisor role.
      */
     private static final String SYSTEM_PROMPT =
-        "You are a helpful banking assistant inside a desktop banking application called Secure Bank. " +
-        "Your role is to explain transactions, summarize spending patterns, guide users through banking features, " +
-        "and answer general banking help questions. " +
-        "Rules you MUST follow:\n" +
-        "1. You CANNOT execute any banking operations (no deposits, withdrawals, transfers).\n" +
-        "2. You CANNOT access the database or any system resources.\n" +
-        "3. You can only EXPLAIN and ASSIST based on data provided to you.\n" +
-        "4. Keep answers concise (2-4 sentences unless more detail is requested).\n" +
-        "5. If asked to perform a transaction, politely explain that you can only provide guidance, " +
-        "and direct the user to use the Dashboard or Transaction features.\n" +
-        "6. Be professional and accurate in all financial explanations.";
+        "You are \"Aegis\", a professional AI Banking Advisor for SecureBank desktop application.\n\n" +
+        "Your role: Analyze financial data, explain transactions, and guide users through banking operations.\n\n" +
+        "RESPONSE FORMAT - STRICT RULES:\n" +
+        "1. NEVER write paragraphs. Use short sentences.\n" +
+        "2. ALWAYS use bullet points (•) for lists.\n" +
+        "3. Use HEADINGS in UPPERCASE for sections.\n" +
+        "4. Highlight KEY NUMBERS with **double asterisks**.\n" +
+        "5. Keep responses under 200 words unless user asks for detail.\n" +
+        "6. When comparing: use simple tables with | separators.\n\n" +
+        "STRUCTURED OUTPUT EXAMPLE:\n" +
+        "HEADING\n" +
+        "• Point one\n" +
+        "• Point two\n" +
+        "• **$100** is the key amount\n\n" +
+        "CRITICAL RULES:\n" +
+        "- You are READ-ONLY. Never execute transactions.\n" +
+        "- Do not access databases. Use only provided context.\n" +
+        "- If asked to transfer/deposit: explain the process, then direct to Dashboard.\n" +
+        "- Never say 'consult an advisor' - you ARE the advisor.\n" +
+        "- Calculate EMI, interest, or impact when numbers are provided.\n\n" +
+        "TONE: Professional, confident, concise, analytical.";
 
     /**
      * Sends a prompt to the Ollama API synchronously and returns the full response.
@@ -143,12 +153,12 @@ public class LLMService {
         prompt.append(SYSTEM_PROMPT).append("\n\n");
 
         if (bankingContext != null && !bankingContext.isEmpty()) {
-            prompt.append("--- BANKING DATA (for context only) ---\n");
+            prompt.append("Banking Context (read-only facts):\n");
             prompt.append(bankingContext);
-            prompt.append("\n--- END BANKING DATA ---\n\n");
+            prompt.append("\n\n");
         }
 
-        prompt.append("User question: ").append(userMessage);
+        prompt.append("User Request:\n").append(userMessage == null ? "" : userMessage);
         return prompt.toString();
     }
 
@@ -161,7 +171,7 @@ public class LLMService {
             "\"model\":\"" + escapeJson(model) + "\"," +
             "\"prompt\":\"" + escapeJson(prompt) + "\"," +
             "\"stream\":true," +
-            "\"options\":{\"temperature\":0.3,\"num_predict\":512}" +
+            "\"options\":{\"temperature\":0.5,\"num_predict\":1024}" +
             "}";
     }
 

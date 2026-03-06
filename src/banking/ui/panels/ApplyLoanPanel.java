@@ -14,6 +14,7 @@ public class ApplyLoanPanel extends JPanel {
     private final LoanService loanService;
     private final BankingService bankingService;
 
+    private JComboBox<String> accountSelector;
     private JTextField amountField;
     private JTextField incomeField;
     private JComboBox<String> typeComboBox;
@@ -25,6 +26,19 @@ public class ApplyLoanPanel extends JPanel {
         this.loanService = new LoanService();
         this.bankingService = new BankingService();
         setupUI();
+        loadAccounts();
+    }
+
+    private void loadAccounts() {
+        try {
+            var accounts = bankingService.getAccountsByCustomer(customerId);
+            accountSelector.removeAllItems();
+            for (var acc : accounts) {
+                accountSelector.addItem(acc.getAccountNumber());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void setupUI() {
@@ -45,6 +59,17 @@ public class ApplyLoanPanel extends JPanel {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
+        JLabel accountLabel = new JLabel("Select Account:");
+        UIStyle.styleLabel(accountLabel);
+        formPanel.add(accountLabel, gbc);
+
+        accountSelector = new JComboBox<>();
+        UIStyle.styleComboBox(accountSelector);
+        gbc.gridx = 1;
+        formPanel.add(accountSelector, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         JLabel amountLabel = new JLabel("Loan Amount ($):");
         UIStyle.styleLabel(amountLabel);
         formPanel.add(amountLabel, gbc);
@@ -52,10 +77,11 @@ public class ApplyLoanPanel extends JPanel {
         amountField = new JTextField(15);
         UIStyle.styleTextField(amountField);
         gbc.gridx = 1;
+        gbc.gridy = 1;
         formPanel.add(amountField, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         JLabel incomeLabel = new JLabel("Monthly Income ($):");
         UIStyle.styleLabel(incomeLabel);
         formPanel.add(incomeLabel, gbc);
@@ -114,6 +140,12 @@ public class ApplyLoanPanel extends JPanel {
     }
 
     private void handleApplication() {
+        String selectedAccount = (String) accountSelector.getSelectedItem();
+        if (selectedAccount == null || selectedAccount.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please select an account first.", "No Account Selected", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         try {
             BigDecimal amount = new BigDecimal(amountField.getText().trim());
             BigDecimal income = new BigDecimal(incomeField.getText().trim());
@@ -121,7 +153,7 @@ public class ApplyLoanPanel extends JPanel {
             String loanType = (String) typeComboBox.getSelectedItem();
 
             banking.model.Customer customer = bankingService.getCustomer(customerId);
-            LoanDecision decision = loanService.submitLoanRequest(customerId, customer.getCibilScore(), income, amount, loanType, termMonths);
+            LoanDecision decision = loanService.submitLoanRequest(customerId, selectedAccount, customer.getCibilScore(), income, amount, loanType, termMonths);
 
             resultArea.setText(
                 "Loan Status: " + decision.getStatus() + "\n" +

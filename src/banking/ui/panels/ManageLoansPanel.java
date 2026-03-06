@@ -98,16 +98,19 @@ public class ManageLoansPanel extends JPanel {
         
         boolean success;
         if (approve) {
-            success = loanService.approveLoan(loanId);
+            success = loanService.approveLoanWithCredit(loanId);
         } else {
             success = loanService.rejectLoan(loanId);
         }
 
         if (success) {
-            JOptionPane.showMessageDialog(this, "Loan status updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            String message = approve 
+                ? "Loan approved and amount credited to user account!" 
+                : "Loan rejected.";
+            JOptionPane.showMessageDialog(this, message, "Success", JOptionPane.INFORMATION_MESSAGE);
             loadPendingLoans(); // Refresh table
         } else {
-            JOptionPane.showMessageDialog(this, "Failed to update loan status.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Failed to process loan.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

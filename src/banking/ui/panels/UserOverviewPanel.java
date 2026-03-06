@@ -13,15 +13,11 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.List;
 
-/**
- * Modern dashboard panel for standard users.
- * Shows account selection, balance, and quick action buttons.
- */
 public class UserOverviewPanel extends JPanel implements Refreshable {
     private final User currentUser;
     private final BankingService bankingService;
     private final Frame parentFrame;
-    
+
     private JComboBox<String> accountSelector;
     private JLabel lblBalance;
     private JLabel lblWelcome;
@@ -40,30 +36,29 @@ public class UserOverviewPanel extends JPanel implements Refreshable {
         setBackground(UIStyle.BACKGROUND_COLOR);
         setBorder(new EmptyBorder(30, 30, 30, 30));
 
-        // --- Account Overview Card ---
-        ModernUIComponents.RoundedPanel accountCard = 
+        ModernUIComponents.RoundedPanel accountCard =
             new ModernUIComponents.RoundedPanel(20, Color.WHITE);
         accountCard.setLayout(new BorderLayout(20, 20));
         accountCard.setBorder(new EmptyBorder(30, 30, 30, 30));
-        
+
         JPanel topRow = new JPanel(new BorderLayout());
         topRow.setBackground(Color.WHITE);
-        
+
         JPanel userInfoPanel = new JPanel(new GridLayout(2, 1, 0, 5));
         userInfoPanel.setBackground(Color.WHITE);
-        
+
         lblWelcome = new JLabel("Welcome back, " + currentUser.getUsername());
         lblWelcome.setFont(UIStyle.HEADER_FONT);
         lblWelcome.setForeground(UIStyle.TEXT_COLOR);
         userInfoPanel.add(lblWelcome);
-        
+
         lblCibil = new JLabel("CIBIL Score: Loading...");
         lblCibil.setFont(UIStyle.LABEL_FONT);
         lblCibil.setForeground(UIStyle.TEXT_LIGHT);
         userInfoPanel.add(lblCibil);
-        
+
         topRow.add(userInfoPanel, BorderLayout.WEST);
-        
+
         accountSelector = new JComboBox<>();
         UIStyle.styleComboBox(accountSelector);
         accountSelector.setPreferredSize(new Dimension(200, 35));
@@ -73,71 +68,59 @@ public class UserOverviewPanel extends JPanel implements Refreshable {
             }
         });
         topRow.add(accountSelector, BorderLayout.EAST);
-        
+
         accountCard.add(topRow, BorderLayout.NORTH);
-        
+
         lblBalance = new JLabel("$0.00", SwingConstants.CENTER);
         lblBalance.setFont(new Font("Segoe UI", Font.BOLD, 64));
         lblBalance.setForeground(UIStyle.ACCENT_COLOR);
         accountCard.add(lblBalance, BorderLayout.CENTER);
-        
+
         JPanel southPanel = new JPanel(new GridLayout(2, 1, 0, 5));
         southPanel.setBackground(Color.WHITE);
+
         JLabel lblStatus = new JLabel("Available Balance", SwingConstants.CENTER);
         lblStatus.setFont(UIStyle.LABEL_FONT);
         lblStatus.setForeground(UIStyle.TEXT_LIGHT);
         southPanel.add(lblStatus);
-        
+
         lblAccountType = new JLabel("Account Type: --", SwingConstants.CENTER);
         lblAccountType.setFont(UIStyle.SMALL_FONT);
         lblAccountType.setForeground(UIStyle.TEXT_LIGHT);
         southPanel.add(lblAccountType);
-        accountCard.add(southPanel, BorderLayout.SOUTH);
 
+        accountCard.add(southPanel, BorderLayout.SOUTH);
         add(accountCard, BorderLayout.NORTH);
 
-        // --- Quick Actions ---
-        JPanel actionsWrapper = new JPanel(new BorderLayout(0, 25));
-        actionsWrapper.setBackground(UIStyle.BACKGROUND_COLOR);
+        JPanel actionsPanel = new JPanel(new GridLayout(5, 1, 0, 15));
+        actionsPanel.setBackground(UIStyle.BACKGROUND_COLOR);
 
-        JPanel actionsGrid = new JPanel(new GridLayout(1, 2, 25, 0));
-        actionsGrid.setBackground(UIStyle.BACKGROUND_COLOR);
-        
         JButton btnDeposit = new JButton("\u2193  QUICK DEPOSIT");
         UIStyle.styleSuccessButton(btnDeposit);
         btnDeposit.addActionListener(e -> openTransaction("DEPOSIT"));
-        actionsGrid.add(btnDeposit);
-        
+        actionsPanel.add(btnDeposit);
+
         JButton btnWithdraw = new JButton("\u2191  QUICK WITHDRAW");
         UIStyle.stylePrimaryButton(btnWithdraw);
         btnWithdraw.addActionListener(e -> openTransaction("WITHDRAW"));
-        actionsGrid.add(btnWithdraw);
+        actionsPanel.add(btnWithdraw);
 
         JButton btnTransfer = new JButton("\u21C4  SEND MONEY (TRANSFER)");
         UIStyle.styleButton(btnTransfer, UIStyle.SECONDARY_COLOR);
-        btnTransfer.setPreferredSize(new Dimension(0, 60));
         btnTransfer.addActionListener(e -> openTransaction("TRANSFER"));
+        actionsPanel.add(btnTransfer);
 
         JButton btnLoan = new JButton("\uD83D\uDCB5  REQUEST LOAN");
         UIStyle.styleButton(btnLoan, UIStyle.PRIMARY_COLOR);
-        btnLoan.setPreferredSize(new Dimension(0, 60));
         btnLoan.addActionListener(e -> requestLoan());
+        actionsPanel.add(btnLoan);
 
         JButton btnSetPin = new JButton("\uD83D\uDD12  SET / CHANGE TRANSACTION PIN");
         UIStyle.styleButton(btnSetPin, new Color(100, 100, 100));
-        btnSetPin.setPreferredSize(new Dimension(0, 60));
         btnSetPin.addActionListener(e -> setTransactionPin());
+        actionsPanel.add(btnSetPin);
 
-        JPanel bottomActions = new JPanel(new GridLayout(3, 1, 0, 15));
-        bottomActions.setBackground(UIStyle.BACKGROUND_COLOR);
-        bottomActions.add(btnTransfer);
-        bottomActions.add(btnLoan);
-        bottomActions.add(btnSetPin);
-        
-        actionsWrapper.add(actionsGrid, BorderLayout.NORTH);
-        actionsWrapper.add(bottomActions, BorderLayout.CENTER);
-        
-        add(actionsWrapper, BorderLayout.CENTER);
+        add(actionsPanel, BorderLayout.CENTER);
     }
 
     private void openTransaction(String type) {
@@ -148,7 +131,7 @@ public class UserOverviewPanel extends JPanel implements Refreshable {
         }
         TransactionDialog dialog = new TransactionDialog(parentFrame, acc, type, currentUser.getUserId());
         dialog.setVisible(true);
-        onActivated(); // Refresh after transaction
+        onActivated();
     }
 
     private void setTransactionPin() {
@@ -160,7 +143,9 @@ public class UserOverviewPanel extends JPanel implements Refreshable {
         JPasswordField pinField = new JPasswordField();
         int result = JOptionPane.showConfirmDialog(parentFrame, pinField,
                 "Enter new Transaction PIN (4-6 digits):", JOptionPane.OK_CANCEL_OPTION);
-        if (result != JOptionPane.OK_OPTION) return;
+        if (result != JOptionPane.OK_OPTION) {
+            return;
+        }
 
         String pin = new String(pinField.getPassword()).trim();
         if (!pin.matches("\\d{4,6}")) {
@@ -177,6 +162,12 @@ public class UserOverviewPanel extends JPanel implements Refreshable {
     }
 
     private void requestLoan() {
+        String selectedAccount = (String) accountSelector.getSelectedItem();
+        if (selectedAccount == null || selectedAccount.isEmpty()) {
+            JOptionPane.showMessageDialog(parentFrame, "Please select an account first.", "No Account Selected", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         JTextField amountField = new JTextField();
         JTextField incomeField = new JTextField();
         JComboBox<String> typeBox = new JComboBox<>(new String[]{"PERSONAL", "STUDENT", "HOME", "AUTO"});
@@ -211,6 +202,7 @@ public class UserOverviewPanel extends JPanel implements Refreshable {
             banking.service.LoanService loanService = new banking.service.LoanService();
             banking.model.LoanDecision decision = loanService.submitLoanRequest(
                 customer.getCustomerId(),
+                selectedAccount,
                 customer.getCibilScore(),
                 monthlyIncome,
                 amount,
@@ -232,19 +224,32 @@ public class UserOverviewPanel extends JPanel implements Refreshable {
     }
 
     private void updateBalanceDisplay(String accNum) {
+        if (accNum == null || accNum.isBlank()) {
+            lblBalance.setText("$0.00");
+            lblAccountType.setText("Account Type: --");
+            return;
+        }
+
         new SwingWorker<Account, Void>() {
             @Override
             protected Account doInBackground() throws Exception {
                 return bankingService.getAccount(accNum);
             }
+
             @Override
             protected void done() {
                 try {
                     Account acc = get();
-                    lblBalance.setText(banking.util.Validator.formatCurrency(acc.getBalance()));
-                    String typeStr = acc.getAccountType() != null ? acc.getAccountType().name() : "SAVINGS";
-                    lblAccountType.setText("Account Type: " + typeStr);
-                } catch (Exception ignored) {}
+                    if (acc != null) {
+                        lblBalance.setText(banking.util.Validator.formatCurrency(acc.getBalance()));
+                        String typeStr = acc.getAccountType() != null ? acc.getAccountType().name() : "SAVINGS";
+                        lblAccountType.setText("Account Type: " + typeStr);
+                    } else {
+                        lblBalance.setText("$0.00");
+                        lblAccountType.setText("Account Type: --");
+                    }
+                } catch (Exception ignored) {
+                }
             }
         }.execute();
     }
@@ -260,6 +265,7 @@ public class UserOverviewPanel extends JPanel implements Refreshable {
                 }
                 return new java.util.ArrayList<>();
             }
+
             @Override
             protected void done() {
                 try {
@@ -268,18 +274,26 @@ public class UserOverviewPanel extends JPanel implements Refreshable {
                     if (customer != null) {
                         lblCibil.setText("CIBIL Score: " + customer.getCibilScore());
                     }
+
                     String selected = (String) accountSelector.getSelectedItem();
                     accountSelector.removeAllItems();
                     for (Account acc : accounts) {
                         accountSelector.addItem(acc.getAccountNumber());
                     }
-                    if (selected != null) {
+
+                    if (selected != null && accounts.stream().anyMatch(acc -> acc.getAccountNumber().equals(selected))) {
                         accountSelector.setSelectedItem(selected);
                     } else if (!accounts.isEmpty()) {
                         accountSelector.setSelectedIndex(0);
+                    } else {
+                        updateBalanceDisplay(null);
                     }
+
+                    updateBalanceDisplay((String) accountSelector.getSelectedItem());
                 } catch (Exception e) {
+                    accountSelector.removeAllItems();
                     accountSelector.addItem("Error loading accounts");
+                    updateBalanceDisplay(null);
                 }
             }
         }.execute();
