@@ -53,16 +53,30 @@ public class AccountDAOImpl implements AccountDAO {
 
     @Override
     public boolean updateBalance(String accNumber, BigDecimal balance) {
-        String sql = "UPDATE account SET balance = ? WHERE account_number = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setBigDecimal(1, balance);
-            stmt.setString(2, accNumber);
-            return stmt.executeUpdate() > 0;
+        return updateBalance(null, accNumber, balance);
+    }
+
+    @Override
+    public boolean updateBalance(Connection conn, String accNumber, BigDecimal balance) {
+        boolean externalConn = conn != null;
+        try {
+            if (!externalConn) {
+                conn = DatabaseConnection.getConnection();
+            }
+            String sql = "UPDATE account SET balance = ? WHERE account_number = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setBigDecimal(1, balance);
+                stmt.setString(2, accNumber);
+                return stmt.executeUpdate() > 0;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
+        } finally {
+            if (conn != null && !externalConn) {
+                DatabaseConnection.releaseConnection(conn);
+            }
         }
-        return false;
     }
 
     @Override

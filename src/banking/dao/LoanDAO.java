@@ -9,4 +9,5 @@ public interface LoanDAO {
     List<Loan> getPendingLoans();
     boolean updateLoanStatus(int loanId, String status);
     Loan findById(int loanId);
+    boolean approveAndCreditLoan(int loanId);
 }

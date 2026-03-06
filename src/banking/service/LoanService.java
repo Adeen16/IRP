@@ -54,12 +54,13 @@ public class LoanService {
         return decision;
     }
 
-    public LoanDecision submitLoanRequest(int customerId, int creditScore, BigDecimal monthlyIncome,
+    public LoanDecision submitLoanRequest(int customerId, String accountNumber, int creditScore, BigDecimal monthlyIncome,
                                           BigDecimal loanAmount, String loanType, int loanDuration) throws Exception {
         LoanDecision decision = evaluateLoan(creditScore, monthlyIncome, loanAmount, loanType, loanDuration);
 
         Loan loan = new Loan();
         loan.setCustomerId(customerId);
+        loan.setAccountNumber(accountNumber);
         loan.setLoanAmount(loanAmount.setScale(2, RoundingMode.HALF_UP));
         loan.setInterestRate(decision.getInterestRate().setScale(2, RoundingMode.HALF_UP));
         loan.setLoanDuration(loanDuration);
@@ -101,6 +102,10 @@ public class LoanService {
 
     public boolean approveLoan(int loanId) {
         return loanDAO.updateLoanStatus(loanId, "APPROVED");
+    }
+
+    public boolean approveLoanWithCredit(int loanId) {
+        return loanDAO.approveAndCreditLoan(loanId);
     }
 
     public boolean rejectLoan(int loanId) {

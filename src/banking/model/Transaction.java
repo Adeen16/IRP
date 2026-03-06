@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class Transaction {
-    public enum TransactionType { DEPOSIT, WITHDRAW, TRANSFER }
+    public enum TransactionType { DEPOSIT, WITHDRAW, TRANSFER, LOAN_CREDIT }
 
     private int transactionId;
     private String accountNumber;

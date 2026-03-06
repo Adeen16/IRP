@@ -67,17 +67,39 @@ public class ChatAssistantPanel extends JPanel implements Refreshable {
         statusLabel.setForeground(UIStyle.TEXT_LIGHT);
         headerLeft.add(statusLabel);
 
-        header.add(headerLeft, BorderLayout.WEST);
-
         JButton clearBtn = new JButton("Clear Chat");
         UIStyle.styleButton(clearBtn, UIStyle.SECONDARY_COLOR);
         clearBtn.addActionListener(e -> clearChat());
-        header.add(clearBtn, BorderLayout.EAST);
+
+        JComboBox<String> modelSelector = new JComboBox<>(new String[]{"phi3", "llama3:8b"});
+        modelSelector.setFont(UIStyle.SMALL_FONT);
+        modelSelector.setPreferredSize(new Dimension(100, 25));
+        modelSelector.setToolTipText("Switch AI model");
+        modelSelector.setSelectedItem(chatController.getModelName());
+        modelSelector.addActionListener(e -> {
+            String selected = (String) modelSelector.getSelectedItem();
+            chatController.setModel(selected);
+            statusLabel.setText("Switched to " + selected + " - Reconnecting...");
+            checkConnection();
+        });
+
+        JPanel headerRight = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        headerRight.setBackground(Color.WHITE);
+        headerRight.add(modelSelector);
+        headerRight.add(clearBtn);
+
+        header.add(headerLeft, BorderLayout.WEST);
+        header.add(headerRight, BorderLayout.EAST);
 
         add(header, BorderLayout.NORTH);
 
         // ===== Chat History =====
-        chatHistory = new JTextPane();
+        chatHistory = new JTextPane() {
+            @Override
+            public boolean getScrollableTracksViewportWidth() {
+                return true;
+            }
+        };
         chatHistory.setEditable(false);
         chatHistory.setBackground(new Color(248, 250, 252));
         chatHistory.setMargin(new Insets(15, 15, 15, 15));
@@ -108,6 +130,7 @@ public class ChatAssistantPanel extends JPanel implements Refreshable {
         JScrollPane scrollPane = new JScrollPane(chatHistory);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         ModernUIComponents.RoundedPanel chatCard = new ModernUIComponents.RoundedPanel(15, Color.WHITE);
         chatCard.setLayout(new BorderLayout());
@@ -281,5 +304,31 @@ public class ChatAssistantPanel extends JPanel implements Refreshable {
         }.execute();
 
         userInput.requestFocusInWindow();
+    }
+
+    private void checkConnection() {
+        new SwingWorker<Boolean, Void>() {
+            @Override
+            protected Boolean doInBackground() {
+                return chatController.isLLMAvailable();
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    boolean available = get();
+                    if (available) {
+                        statusLabel.setText("Model: " + chatController.getModelName() + " | Connected");
+                        statusLabel.setForeground(new Color(16, 185, 129));
+                    } else {
+                        statusLabel.setText("Ollama offline — run 'ollama serve' in terminal");
+                        statusLabel.setForeground(UIStyle.DANGER_COLOR);
+                    }
+                } catch (Exception e) {
+                    statusLabel.setText("Connection check failed");
+                    statusLabel.setForeground(UIStyle.DANGER_COLOR);
+                }
+            }
+        }.execute();
     }
 }

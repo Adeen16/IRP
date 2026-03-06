@@ -262,16 +262,21 @@ public class BankingService {
             BigDecimal newFromBalance = Validator.roundToTwoDecimals(fromAccount.getBalance().subtract(amount));
             BigDecimal newToBalance = Validator.roundToTwoDecimals(toAccount.getBalance().add(amount));
             
-            accountDAO.updateBalance(fromAccountNumber, newFromBalance);
-            accountDAO.updateBalance(toAccountNumber, newToBalance);
+            // Use transaction-aware DAO methods
+            boolean debitSuccess = accountDAO.updateBalance(conn, fromAccountNumber, newFromBalance);
+            boolean creditSuccess = accountDAO.updateBalance(conn, toAccountNumber, newToBalance);
+            
+            if (!debitSuccess || !creditSuccess) {
+                throw new BankingException("Failed to update account balances.");
+            }
             
             Transaction outTransaction = new Transaction(fromAccountNumber, Transaction.TransactionType.TRANSFER, amount);
             outTransaction.setPerformedBy(userId);
-            transactionDAO.create(outTransaction);
+            transactionDAO.create(conn, outTransaction);
             
             Transaction inTransaction = new Transaction(toAccountNumber, Transaction.TransactionType.TRANSFER, amount);
             inTransaction.setPerformedBy(userId);
-            transactionDAO.create(inTransaction);
+            transactionDAO.create(conn, inTransaction);
             
             conn.commit();
             logTransactionToFile(outTransaction);

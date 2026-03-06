@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 public class Loan {
     private int loanId;
     private int customerId;
+    private String accountNumber;
     private BigDecimal loanAmount;
     private BigDecimal interestRate;
     private int loanDuration;
@@ -34,6 +35,7 @@ public class Loan {
     // Getters
     public int getLoanId() { return loanId; }
     public int getCustomerId() { return customerId; }
+    public String getAccountNumber() { return accountNumber; }
     public BigDecimal getLoanAmount() { return loanAmount; }
     public BigDecimal getInterestRate() { return interestRate; }
     public int getLoanDuration() { return loanDuration; }
@@ -48,6 +50,7 @@ public class Loan {
     // Setters
     public void setLoanId(int loanId) { this.loanId = loanId; }
     public void setCustomerId(int customerId) { this.customerId = customerId; }
+    public void setAccountNumber(String accountNumber) { this.accountNumber = accountNumber; }
     public void setLoanAmount(BigDecimal loanAmount) { this.loanAmount = loanAmount; }
     public void setInterestRate(BigDecimal interestRate) { this.interestRate = interestRate; }
     public void setLoanDuration(int loanDuration) { this.loanDuration = loanDuration; }

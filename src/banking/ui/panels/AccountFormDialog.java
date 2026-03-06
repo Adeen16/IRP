@@ -177,14 +177,24 @@ public class AccountFormDialog extends JDialog {
         new SwingWorker<String, Void>() {
             @Override
             protected String doInBackground() throws Exception {
-                // Use BankingService to ensure User record and credentials are created
-                Customer customer = bankingService.createCustomer(name, phone, email, "");
+                // Check if customer already exists by phone or email
+                banking.dao.CustomerDAO customerDAO = new banking.dao.CustomerDAOImpl();
+                Customer existingCustomer = customerDAO.findByPhoneOrEmail(phone, email);
                 
-                if (customer == null || customer.getCustomerId() <= 0) {
-                    throw new Exception("Failed to create customer and user login.");
+                int customerId;
+                if (existingCustomer != null) {
+                    // Use existing customer
+                    customerId = existingCustomer.getCustomerId();
+                } else {
+                    // Create new customer
+                    Customer customer = bankingService.createCustomer(name, phone, email, "");
+                    if (customer == null || customer.getCustomerId() <= 0) {
+                        throw new Exception("Failed to create customer.");
+                    }
+                    customerId = customer.getCustomerId();
                 }
 
-                Account account = bankingService.createAccount(customer.getCustomerId(), acctType, transactionPin);
+                Account account = bankingService.createAccount(customerId, acctType, transactionPin);
                 if (deposit.compareTo(BigDecimal.ZERO) > 0) {
                     // userId 0 indicates admin/system deposit during account creation
                     bankingService.deposit(account.getAccountNumber(), deposit, 0);

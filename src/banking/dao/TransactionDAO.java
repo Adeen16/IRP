@@ -2,6 +2,7 @@ package banking.dao;
 
 import banking.model.Transaction;
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -11,6 +12,7 @@ public interface TransactionDAO {
     List<Transaction> findByAccountNumber(String accountNumber);
     List<Transaction> findAll();
     void create(Transaction transaction);
+    void create(Connection conn, Transaction transaction);
     List<Transaction> findByAccountNumber(String accountNumber, int limit);
     List<Transaction> findByAccountNumberAndDateRange(String accountNumber, LocalDate start, LocalDate end);
     List<Transaction> findByDateRange(LocalDate start, LocalDate end);

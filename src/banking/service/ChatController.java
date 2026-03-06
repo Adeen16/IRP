@@ -90,6 +90,10 @@ public class ChatController {
         return llmService.getModel();
     }
 
+    public void setModel(String model) {
+        llmService.setModel(model);
+    }
+
     // ========== Intent Detection ==========
 
     private enum Intent {
