@@ -1,6 +1,7 @@
 package banking.application;
 
 import banking.model.User;
+import banking.security.AuthSession;
 import banking.controllers.DashboardController;
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXMLLoader;
@@ -13,6 +14,7 @@ public class NavigationManager {
 
     public static void navigateToLogin(Stage stage) {
         try {
+            AuthSession.clear();
             FXMLLoader loader = new FXMLLoader(NavigationManager.class.getResource("/banking/resources/fxml/LandingPage.fxml"));
             Parent root = loader.load();
             
@@ -35,6 +37,7 @@ public class NavigationManager {
 
     public static void navigateToDashboard(Stage stage, User user) {
         try {
+            AuthSession.start(user);
             String fxmlPath = user.isAdmin() ? "/banking/resources/fxml/AdminDashboard.fxml" : "/banking/resources/fxml/UserDashboard.fxml";
             String title = user.isAdmin() ? "Admin Dashboard" : "User Dashboard";
             

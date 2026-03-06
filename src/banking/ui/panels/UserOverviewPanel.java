@@ -177,21 +177,57 @@ public class UserOverviewPanel extends JPanel implements Refreshable {
     }
 
     private void requestLoan() {
-        String amountStr = JOptionPane.showInputDialog(parentFrame, "Enter loan amount:");
-        if (amountStr == null || amountStr.trim().isEmpty()) return;
-        
+        JTextField amountField = new JTextField();
+        JTextField incomeField = new JTextField();
+        JComboBox<String> typeBox = new JComboBox<>(new String[]{"PERSONAL", "STUDENT", "HOME", "AUTO"});
+        JComboBox<String> durationBox = new JComboBox<>(new String[]{"12", "24", "36", "48", "60"});
+
+        JPanel panel = new JPanel(new GridLayout(0, 1, 8, 8));
+        panel.add(new JLabel("Loan Amount ($):"));
+        panel.add(amountField);
+        panel.add(new JLabel("Monthly Income ($):"));
+        panel.add(incomeField);
+        panel.add(new JLabel("Loan Type:"));
+        panel.add(typeBox);
+        panel.add(new JLabel("Duration (months):"));
+        panel.add(durationBox);
+
+        int result = JOptionPane.showConfirmDialog(parentFrame, panel, "Request Loan", JOptionPane.OK_CANCEL_OPTION);
+        if (result != JOptionPane.OK_OPTION) {
+            return;
+        }
+
         try {
-            double amount = Double.parseDouble(amountStr);
+            java.math.BigDecimal amount = new java.math.BigDecimal(amountField.getText().trim());
+            java.math.BigDecimal monthlyIncome = new java.math.BigDecimal(incomeField.getText().trim());
+            int duration = Integer.parseInt((String) durationBox.getSelectedItem());
+            String loanType = (String) typeBox.getSelectedItem();
+
             banking.model.Customer customer = bankingService.getCustomerByUserId(currentUser.getUserId());
-            if (customer == null) throw new Exception("Customer not found");
-            
+            if (customer == null) {
+                throw new Exception("Customer not found");
+            }
+
             banking.service.LoanService loanService = new banking.service.LoanService();
-            String status = loanService.evaluateLoanEligibility(customer.getCibilScore());
-            loanService.requestLoan(customer.getCustomerId(), amount, status);
-            
-            JOptionPane.showMessageDialog(parentFrame, "Loan request submitted.\nStatus: " + status);
+            banking.model.LoanDecision decision = loanService.submitLoanRequest(
+                customer.getCustomerId(),
+                customer.getCibilScore(),
+                monthlyIncome,
+                amount,
+                loanType,
+                duration
+            );
+
+            JOptionPane.showMessageDialog(parentFrame,
+                "Loan Status: " + decision.getStatus() + "\n" +
+                    "Interest Rate: " + decision.getInterestRate() + "%\n" +
+                    "Loan Duration: " + decision.getLoanDuration() + " months\n" +
+                    "Monthly EMI: $" + decision.getEmi() + "\n" +
+                    "Reason: " + decision.getReason(),
+                "Loan Decision",
+                JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(parentFrame, "Error: " + ex.getMessage());
+            JOptionPane.showMessageDialog(parentFrame, "Error: " + ex.getMessage(), "Loan Request Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

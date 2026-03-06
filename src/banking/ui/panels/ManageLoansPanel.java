@@ -32,7 +32,7 @@ public class ManageLoansPanel extends JPanel {
         add(titleLabel, BorderLayout.NORTH);
 
         // Table setup
-        String[] columns = {"Loan ID", "Customer ID", "Amount", "Interest %", "Term (Months)", "Date"};
+        String[] columns = {"Loan ID", "Customer ID", "Type", "Amount", "Interest %", "EMI", "Term (Months)", "Status", "Date"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) { return false; }
@@ -75,9 +75,12 @@ public class ManageLoansPanel extends JPanel {
             Object[] row = {
                 loan.getLoanId(),
                 loan.getCustomerId(),
-                "$" + String.format("%.2f", loan.getAmount()),
+                loan.getLoanType(),
+                "$" + String.format("%.2f", loan.getLoanAmount()),
                 loan.getInterestRate() + "%",
-                loan.getTermMonths(),
+                "$" + String.format("%.2f", loan.getEmi()),
+                loan.getLoanDuration(),
+                loan.getStatus(),
                 loan.getCreatedAt()
             };
             tableModel.addRow(row);

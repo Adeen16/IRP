@@ -1,6 +1,7 @@
 package banking.ui.admin;
 
 import banking.model.User;
+import banking.security.AuthSession;
 import banking.service.AnalyticsService;
 import banking.service.AuthService;
 import banking.service.BankingService;
@@ -39,6 +40,9 @@ public class AdminDashboard extends JFrame {
     private UserPanel userPanel;
 
     public AdminDashboard(User user) {
+        if (!AuthSession.isAuthenticated() || !AuthSession.matches(user)) {
+            throw new IllegalStateException("No authenticated session found.");
+        }
         this.adminUser = user;
         this.bankingService = new BankingService();
         this.authService = new AuthService();
@@ -89,6 +93,7 @@ public class AdminDashboard extends JFrame {
         btnLogout.setMaximumSize(new Dimension(240, 45));
         btnLogout.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnLogout.addActionListener(e -> {
+            AuthSession.clear();
             dispose();
             new LoginForm().setVisible(true);
         });

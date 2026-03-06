@@ -1,6 +1,7 @@
 package banking.ui.user;
 
 import banking.model.User;
+import banking.security.AuthSession;
 import banking.service.AuthService;
 import banking.service.BankingService;
 import banking.ui.LoginForm;
@@ -35,6 +36,9 @@ public class UserDashboard extends JFrame {
     private ChatAssistantPanel chatPanel;
 
     public UserDashboard(User user) {
+        if (!AuthSession.isAuthenticated() || !AuthSession.matches(user)) {
+            throw new IllegalStateException("No authenticated session found.");
+        }
         this.currentUser = user;
         this.bankingService = new BankingService();
         this.authService = new AuthService();
@@ -81,6 +85,7 @@ public class UserDashboard extends JFrame {
         btnLogout.setMaximumSize(new Dimension(240, 45));
         btnLogout.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnLogout.addActionListener(e -> {
+            AuthSession.clear();
             dispose();
             new LoginForm().setVisible(true);
         });

@@ -18,6 +18,7 @@ import banking.model.Customer;
 import banking.model.Transaction;
 import banking.util.DatabaseConnection;
 import banking.util.HashUtil;
+import banking.util.PasswordSecurity;
 import banking.util.Validator;
 
 import java.math.BigDecimal;
@@ -55,10 +56,10 @@ public class BankingService {
             counter++;
         }
         
-        String generatedPassword = "user123";
+        String generatedPassword = "Secure123A";
         banking.model.User user = new banking.model.User();
         user.setUsername(uniqueUsername);
-        user.setPasswordHash(HashUtil.hashPassword(generatedPassword));
+        user.setPasswordHash(PasswordSecurity.hashPassword(generatedPassword));
         user.setRole(banking.model.User.UserRole.USER);
         
         boolean userCreated = userDAO.create(user);
