@@ -5,6 +5,7 @@ import banking.service.AuthService;
 import banking.service.BankingService;
 import banking.ui.LoginForm;
 import banking.ui.UIStyle;
+import banking.ui.panels.ChatAssistantPanel;
 import banking.ui.panels.UserOverviewPanel;
 import banking.ui.panels.UserSecurityPanel;
 import banking.ui.panels.UserStatementPanel;
@@ -31,6 +32,7 @@ public class UserDashboard extends JFrame {
     private UserOverviewPanel overviewPanel;
     private UserStatementPanel statementPanel;
     private UserSecurityPanel securityPanel;
+    private ChatAssistantPanel chatPanel;
 
     public UserDashboard(User user) {
         this.currentUser = user;
@@ -70,6 +72,7 @@ public class UserDashboard extends JFrame {
         JButton btnDash = addNavButton(sidebar, "\u2302  Dashboard Overview", "dashboard");
         JButton btnStmt = addNavButton(sidebar, "\u2630  Account Statement",  "statement");
         JButton btnSec  = addNavButton(sidebar, "\u2699  Security Settings",  "security");
+        JButton btnChat = addNavButton(sidebar, "\uD83E\uDD16  AI Assistant",        "assistant");
 
         sidebar.add(Box.createVerticalGlue());
 
@@ -103,10 +106,12 @@ public class UserDashboard extends JFrame {
         overviewPanel  = new UserOverviewPanel(currentUser, bankingService, this);
         statementPanel = new UserStatementPanel(currentUser, bankingService);
         securityPanel  = new UserSecurityPanel(currentUser, authService);
+        chatPanel      = new ChatAssistantPanel(currentUser, bankingService);
 
         contentArea.add(overviewPanel,  "dashboard");
         contentArea.add(statementPanel, "statement");
         contentArea.add(securityPanel,  "security");
+        contentArea.add(chatPanel,      "assistant");
 
         // Assembly
         JPanel mainLayout = new JPanel(new BorderLayout());
@@ -160,6 +165,7 @@ public class UserDashboard extends JFrame {
             case "dashboard" -> overviewPanel.onActivated();
             case "statement" -> statementPanel.onActivated();
             case "security"  -> securityPanel.onActivated();
+            case "assistant" -> chatPanel.onActivated();
         }
     }
 }

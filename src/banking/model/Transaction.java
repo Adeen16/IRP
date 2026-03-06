@@ -11,6 +11,7 @@ public class Transaction {
     private TransactionType type;
     private BigDecimal amount;
     private Timestamp createdAt = new Timestamp(System.currentTimeMillis());
+    private int performedBy;
 
     public Transaction() {}
 
@@ -35,6 +36,9 @@ public class Transaction {
 
     public Timestamp getCreatedAt() { return createdAt; }
     public void setCreatedAt(Timestamp ts) { this.createdAt = ts; }
+
+    public int getPerformedBy() { return performedBy; }
+    public void setPerformedBy(int performedBy) { this.performedBy = performedBy; }
     
     public boolean isCredit() {
         return type == TransactionType.DEPOSIT;

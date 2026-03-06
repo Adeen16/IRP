@@ -17,6 +17,7 @@ import banking.model.Account;
 import banking.model.Customer;
 import banking.model.Transaction;
 import banking.util.DatabaseConnection;
+import banking.util.HashUtil;
 import banking.util.Validator;
 
 import java.math.BigDecimal;
@@ -57,7 +58,7 @@ public class BankingService {
         String generatedPassword = "user123";
         banking.model.User user = new banking.model.User();
         user.setUsername(uniqueUsername);
-        user.setPasswordHash(banking.util.HashUtil.hashPassword(generatedPassword));
+        user.setPasswordHash(HashUtil.hashPassword(generatedPassword));
         user.setRole(banking.model.User.UserRole.USER);
         
         boolean userCreated = userDAO.create(user);
@@ -76,10 +77,15 @@ public class BankingService {
         return customer;
     }
     
-    public Account createAccount(int customerId) throws Exception {
+    public Account createAccount(int customerId, Account.AccountType type, String transactionPassword) throws Exception {
         Customer customer = customerDAO.findById(customerId);
         if (customer == null) {
             throw new ValidationException("Customer not found");
+        }
+        
+        // Validate transaction password (4-6 digits)
+        if (transactionPassword == null || !transactionPassword.matches("\\d{4,6}")) {
+            throw new ValidationException("Transaction password must be 4-6 digits.");
         }
         
         // Ensure account number is unique
@@ -88,7 +94,9 @@ public class BankingService {
             accountNumber = generateAccountNumber();
         } while (accountDAO.findByAccountNumber(accountNumber) != null);
 
-        Account account = new Account(accountNumber, customerId, java.math.BigDecimal.ZERO);
+        Account account = new Account(accountNumber, customerId, BigDecimal.ZERO);
+        account.setAccountType(type);
+        account.setTransactionPassword(HashUtil.hashPassword(transactionPassword));
         accountDAO.create(account);
         return account;
     }
@@ -97,7 +105,7 @@ public class BankingService {
         return "BA" + String.format("%010d", Math.abs(UUID.randomUUID().getMostSignificantBits()) % 10000000000L);
     }
     
-    public Transaction deposit(String accountNumber, BigDecimal amount) throws Exception {
+    public Transaction deposit(String accountNumber, BigDecimal amount, int userId) throws Exception {
         if (!Validator.isDepositAllowed(amount)) {
             throw new InvalidTransactionException("Invalid deposit amount. Amount must be positive and within limits.");
         }
@@ -106,7 +114,6 @@ public class BankingService {
         if (account == null) {
             throw new AccountNotFoundException(accountNumber);
         }
-        
         
         Connection conn = null;
         try {
@@ -118,10 +125,12 @@ public class BankingService {
             accountDAO.updateBalance(accountNumber, newBalance);
             
             Transaction transaction = new Transaction(accountNumber, Transaction.TransactionType.DEPOSIT, amount);
+            transaction.setPerformedBy(userId);
             transactionDAO.create(transaction);
             
             conn.commit();
             logTransactionToFile(transaction);
+            logAuditAction(userId, "DEPOSIT $" + amount + " to " + accountNumber);
             return transaction;
         } catch (Exception e) {
             if (conn != null) conn.rollback();
@@ -134,18 +143,37 @@ public class BankingService {
         }
     }
     
-    public Transaction withdraw(String accountNumber, BigDecimal amount) throws Exception {
+    public Transaction withdraw(String accountNumber, BigDecimal amount, String transactionPassword, int userId) throws Exception {
         Account account = accountDAO.findByAccountNumber(accountNumber);
         if (account == null) {
             throw new AccountNotFoundException(accountNumber);
         }
         
+        // Verify transaction password (null means account has no PIN set yet)
+        if (account.getTransactionPassword() == null || account.getTransactionPassword().isEmpty()) {
+            throw new InvalidTransactionException("Transaction PIN not set. Please set your transaction PIN before making withdrawals.");
+        }
+        if (!HashUtil.verifyPassword(transactionPassword, account.getTransactionPassword())) {
+            throw new InvalidTransactionException("Invalid transaction password.");
+        }
         
-        if (!Validator.isWithdrawalAllowed(account.getBalance(), amount)) {
+        // Account-type-aware balance validation
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new InvalidTransactionException("Withdrawal amount must be positive.");
+        }
+        
+        BigDecimal minBalance = account.getAccountType() == Account.AccountType.SAVINGS
+            ? new BigDecimal("100.00") : BigDecimal.ZERO;
+        BigDecimal balanceAfter = account.getBalance().subtract(amount);
+        
+        if (balanceAfter.compareTo(minBalance) < 0) {
             if (account.getBalance().compareTo(amount) < 0) {
                 throw new InsufficientBalanceException(account.getBalance().doubleValue(), amount.doubleValue());
             }
-            throw new InvalidTransactionException("Withdrawal not allowed. Check amount limits and minimum balance.");
+            throw new InvalidTransactionException(
+                account.getAccountType() == Account.AccountType.SAVINGS
+                    ? "Savings account must maintain minimum balance of $100.00"
+                    : "Insufficient balance for withdrawal.");
         }
         
         Connection conn = null;
@@ -153,15 +181,17 @@ public class BankingService {
             conn = DatabaseConnection.getConnection();
             conn.setAutoCommit(false);
             
-            BigDecimal newBalance = Validator.roundToTwoDecimals(account.getBalance().subtract(amount));
+            BigDecimal newBalance = Validator.roundToTwoDecimals(balanceAfter);
             account.setBalance(newBalance);
             accountDAO.updateBalance(accountNumber, newBalance);
             
             Transaction transaction = new Transaction(accountNumber, Transaction.TransactionType.WITHDRAW, amount);
+            transaction.setPerformedBy(userId);
             transactionDAO.create(transaction);
             
             conn.commit();
             logTransactionToFile(transaction);
+            logAuditAction(userId, "WITHDRAW $" + amount + " from " + accountNumber);
             return transaction;
         } catch (Exception e) {
             if (conn != null) conn.rollback();
@@ -174,7 +204,7 @@ public class BankingService {
         }
     }
     
-    public Transaction[] transfer(String fromAccountNumber, String toAccountNumber, BigDecimal amount) throws Exception {
+    public Transaction[] transfer(String fromAccountNumber, String toAccountNumber, BigDecimal amount, String transactionPassword, int userId) throws Exception {
         if (fromAccountNumber.equals(toAccountNumber)) {
             throw new InvalidTransactionException("Cannot transfer to the same account");
         }
@@ -184,18 +214,36 @@ public class BankingService {
             throw new AccountNotFoundException(fromAccountNumber);
         }
         
-        
         Account toAccount = accountDAO.findByAccountNumber(toAccountNumber);
         if (toAccount == null) {
             throw new AccountNotFoundException(toAccountNumber);
         }
         
+        // Verify transaction password (null means account has no PIN set yet)
+        if (fromAccount.getTransactionPassword() == null || fromAccount.getTransactionPassword().isEmpty()) {
+            throw new InvalidTransactionException("Transaction PIN not set. Please set your transaction PIN before making transfers.");
+        }
+        if (!HashUtil.verifyPassword(transactionPassword, fromAccount.getTransactionPassword())) {
+            throw new InvalidTransactionException("Invalid transaction password.");
+        }
         
-        if (!Validator.isTransferAllowed(fromAccount.getBalance(), amount)) {
+        // Account-type-aware balance validation
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new InvalidTransactionException("Transfer amount must be positive.");
+        }
+        
+        BigDecimal minBalance = fromAccount.getAccountType() == Account.AccountType.SAVINGS
+            ? new BigDecimal("100.00") : BigDecimal.ZERO;
+        BigDecimal balanceAfter = fromAccount.getBalance().subtract(amount);
+        
+        if (balanceAfter.compareTo(minBalance) < 0) {
             if (fromAccount.getBalance().compareTo(amount) < 0) {
                 throw new InsufficientBalanceException(fromAccount.getBalance().doubleValue(), amount.doubleValue());
             }
-            throw new InvalidTransactionException("Transfer not allowed. Check amount limits and minimum balance.");
+            throw new InvalidTransactionException(
+                fromAccount.getAccountType() == Account.AccountType.SAVINGS
+                    ? "Savings account must maintain minimum balance of $100.00"
+                    : "Insufficient balance for transfer.");
         }
         
         Connection conn = null;
@@ -217,14 +265,17 @@ public class BankingService {
             accountDAO.updateBalance(toAccountNumber, newToBalance);
             
             Transaction outTransaction = new Transaction(fromAccountNumber, Transaction.TransactionType.TRANSFER, amount);
+            outTransaction.setPerformedBy(userId);
             transactionDAO.create(outTransaction);
             
             Transaction inTransaction = new Transaction(toAccountNumber, Transaction.TransactionType.TRANSFER, amount);
+            inTransaction.setPerformedBy(userId);
             transactionDAO.create(inTransaction);
             
             conn.commit();
             logTransactionToFile(outTransaction);
             logTransactionToFile(inTransaction);
+            logAuditAction(userId, "TRANSFER $" + amount + " from " + fromAccountNumber + " to " + toAccountNumber);
             return new Transaction[]{outTransaction, inTransaction};
         } catch (Exception e) {
             if (conn != null) conn.rollback();
@@ -238,7 +289,8 @@ public class BankingService {
     }
 
     private void lockAccount(Connection conn, String accountNumber) throws Exception {
-        String sql = "SELECT balance FROM account WHERE account_number = ? FOR UPDATE";
+        // SQLite does not support SELECT ... FOR UPDATE; simple read to verify existence
+        String sql = "SELECT balance FROM account WHERE account_number = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, accountNumber);
             stmt.executeQuery();
@@ -269,6 +321,25 @@ public class BankingService {
             }
         } catch (Exception e) {
             System.err.println("Failed to log transaction: " + e.getMessage());
+        }
+    }
+    
+    public void logAuditAction(int userId, String action) {
+        Connection conn = null;
+        try {
+            conn = DatabaseConnection.getConnection();
+            String sql = "INSERT INTO audit_log (user_id, action) VALUES (?, ?)";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, userId);
+                stmt.setString(2, action);
+                stmt.executeUpdate();
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to log audit action: " + e.getMessage());
+        } finally {
+            if (conn != null) {
+                DatabaseConnection.releaseConnection(conn);
+            }
         }
     }
     
@@ -357,5 +428,29 @@ public class BankingService {
 
     public List<Transaction> getAllTransactionsByDateRange(LocalDate start, LocalDate end) throws Exception {
         return transactionDAO.findByDateRange(start, end);
+    }
+
+    public boolean setTransactionPassword(String accountNumber, String newPin, int userId) throws Exception {
+        Account account = accountDAO.findByAccountNumber(accountNumber);
+        if (account == null) {
+            throw new AccountNotFoundException(accountNumber);
+        }
+        if (newPin == null || !newPin.matches("\\d{4,6}")) {
+            throw new ValidationException("Transaction PIN must be 4-6 digits.");
+        }
+        String hashed = HashUtil.hashPassword(newPin);
+        boolean updated = accountDAO.updateTransactionPassword(accountNumber, hashed);
+        if (updated) {
+            logAuditAction(userId, "SET_TRANSACTION_PIN for " + accountNumber);
+        }
+        return updated;
+    }
+
+    public boolean hasTransactionPassword(String accountNumber) throws Exception {
+        Account account = accountDAO.findByAccountNumber(accountNumber);
+        if (account == null) {
+            throw new AccountNotFoundException(accountNumber);
+        }
+        return account.getTransactionPassword() != null && !account.getTransactionPassword().isEmpty();
     }
 }

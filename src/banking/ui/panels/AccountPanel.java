@@ -69,7 +69,7 @@ public class AccountPanel extends JPanel implements Refreshable {
         add(headerArea, BorderLayout.NORTH);
 
         // --- Table ---
-        String[] columns = {"Account #", "Customer", "Balance"};
+        String[] columns = {"Account #", "Customer", "Type", "Balance"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -128,15 +128,45 @@ public class AccountPanel extends JPanel implements Refreshable {
     }
 
     private void populateTable(List<Account> accounts) {
-        tableModel.setRowCount(0);
-        for (Account a : accounts) {
-            String customerName = "Customer #" + a.getCustomerId();
-            tableModel.addRow(new Object[]{
-                    a.getAccountNumber(),
-                    customerName,
-                    banking.util.Validator.formatCurrency(a.getBalance())
-            });
-        }
+        new SwingWorker<java.util.Map<Integer, String>, Void>() {
+            @Override
+            protected java.util.Map<Integer, String> doInBackground() throws Exception {
+                List<Customer> customers = bankingService.getAllCustomers();
+                java.util.Map<Integer, String> map = new java.util.HashMap<>();
+                for (Customer c : customers) {
+                    map.put(c.getCustomerId(), c.getName());
+                }
+                return map;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    java.util.Map<Integer, String> customerMap = get();
+                    tableModel.setRowCount(0);
+                    for (Account a : accounts) {
+                        String customerName = customerMap.getOrDefault(a.getCustomerId(), "Unknown (" + a.getCustomerId() + ")");
+                        tableModel.addRow(new Object[]{
+                                a.getAccountNumber(),
+                                customerName,
+                                a.getAccountType() != null ? a.getAccountType().name() : "SAVINGS",
+                                banking.util.Validator.formatCurrency(a.getBalance())
+                        });
+                    }
+                } catch (Exception e) {
+                    // Fallback to basic ID display if map fails
+                    tableModel.setRowCount(0);
+                    for (Account a : accounts) {
+                        tableModel.addRow(new Object[]{
+                                a.getAccountNumber(),
+                                "Customer #" + a.getCustomerId(),
+                                "SAVINGS",
+                                banking.util.Validator.formatCurrency(a.getBalance())
+                        });
+                    }
+                }
+            }
+        }.execute();
     }
 
     private void openCreateDialog() {

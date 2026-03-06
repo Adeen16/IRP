@@ -12,19 +12,24 @@ public class TransactionDialog extends JDialog {
     private BankingService bankingService;
     private JTextField txtAmount;
     private JTextField txtTargetAccount;
+    private JPasswordField txtTransactionPin;
     private String type;
     private boolean success = false;
+    private int userId;
 
-    public TransactionDialog(Frame parent, String accountNumber, String type) {
+    public TransactionDialog(Frame parent, String accountNumber, String type, int userId) {
         super(parent, type, true);
         this.accountNumber = accountNumber;
         this.type = type;
+        this.userId = userId;
         this.bankingService = new BankingService();
         initializeUI();
     }
 
     private void initializeUI() {
-        setSize(400, type.equals("TRANSFER") ? 350 : 250);
+        boolean needsPin = type.equals("WITHDRAW") || type.equals("TRANSFER");
+        int height = type.equals("TRANSFER") ? (needsPin ? 420 : 350) : (needsPin ? 320 : 250);
+        setSize(400, height);
         setLocationRelativeTo(getOwner());
         setLayout(new BorderLayout());
 
@@ -59,6 +64,16 @@ public class TransactionDialog extends JDialog {
         UIStyle.styleTextField(txtAmount);
         panel.add(txtAmount, gbc);
 
+        // Transaction PIN (for WITHDRAW and TRANSFER)
+        if (needsPin) {
+            gbc.gridy++;
+            panel.add(new JLabel("Transaction PIN:"), gbc);
+            gbc.gridy++;
+            txtTransactionPin = new JPasswordField();
+            UIStyle.styleTextField(txtTransactionPin);
+            panel.add(txtTransactionPin, gbc);
+        }
+
         // Action Button
         gbc.gridy++;
         gbc.insets = new Insets(20, 5, 5, 5);
@@ -76,11 +91,21 @@ public class TransactionDialog extends JDialog {
         try {
             java.math.BigDecimal amount = new java.math.BigDecimal(txtAmount.getText().trim());
             if (type.equals("DEPOSIT")) {
-                bankingService.deposit(accountNumber, amount);
+                bankingService.deposit(accountNumber, amount, userId);
             } else if (type.equals("WITHDRAW")) {
-                bankingService.withdraw(accountNumber, amount);
+                String pin = new String(txtTransactionPin.getPassword()).trim();
+                if (pin.isEmpty()) {
+                    UIStyle.showError(this, "Please enter your transaction PIN.");
+                    return;
+                }
+                bankingService.withdraw(accountNumber, amount, pin, userId);
             } else if (type.equals("TRANSFER")) {
-                bankingService.transfer(accountNumber, txtTargetAccount.getText(), amount);
+                String pin = new String(txtTransactionPin.getPassword()).trim();
+                if (pin.isEmpty()) {
+                    UIStyle.showError(this, "Please enter your transaction PIN.");
+                    return;
+                }
+                bankingService.transfer(accountNumber, txtTargetAccount.getText().trim(), amount, pin, userId);
             }
             success = true;
             UIStyle.showSuccess(this, type + " Successful!");

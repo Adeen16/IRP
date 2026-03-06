@@ -26,6 +26,7 @@ public class UserOverviewPanel extends JPanel implements Refreshable {
     private JLabel lblBalance;
     private JLabel lblWelcome;
     private JLabel lblCibil;
+    private JLabel lblAccountType;
 
     public UserOverviewPanel(User user, BankingService service, Frame parent) {
         this.currentUser = user;
@@ -80,10 +81,18 @@ public class UserOverviewPanel extends JPanel implements Refreshable {
         lblBalance.setForeground(UIStyle.ACCENT_COLOR);
         accountCard.add(lblBalance, BorderLayout.CENTER);
         
+        JPanel southPanel = new JPanel(new GridLayout(2, 1, 0, 5));
+        southPanel.setBackground(Color.WHITE);
         JLabel lblStatus = new JLabel("Available Balance", SwingConstants.CENTER);
         lblStatus.setFont(UIStyle.LABEL_FONT);
         lblStatus.setForeground(UIStyle.TEXT_LIGHT);
-        accountCard.add(lblStatus, BorderLayout.SOUTH);
+        southPanel.add(lblStatus);
+        
+        lblAccountType = new JLabel("Account Type: --", SwingConstants.CENTER);
+        lblAccountType.setFont(UIStyle.SMALL_FONT);
+        lblAccountType.setForeground(UIStyle.TEXT_LIGHT);
+        southPanel.add(lblAccountType);
+        accountCard.add(southPanel, BorderLayout.SOUTH);
 
         add(accountCard, BorderLayout.NORTH);
 
@@ -114,10 +123,16 @@ public class UserOverviewPanel extends JPanel implements Refreshable {
         btnLoan.setPreferredSize(new Dimension(0, 60));
         btnLoan.addActionListener(e -> requestLoan());
 
-        JPanel bottomActions = new JPanel(new GridLayout(2, 1, 0, 15));
+        JButton btnSetPin = new JButton("\uD83D\uDD12  SET / CHANGE TRANSACTION PIN");
+        UIStyle.styleButton(btnSetPin, new Color(100, 100, 100));
+        btnSetPin.setPreferredSize(new Dimension(0, 60));
+        btnSetPin.addActionListener(e -> setTransactionPin());
+
+        JPanel bottomActions = new JPanel(new GridLayout(3, 1, 0, 15));
         bottomActions.setBackground(UIStyle.BACKGROUND_COLOR);
         bottomActions.add(btnTransfer);
         bottomActions.add(btnLoan);
+        bottomActions.add(btnSetPin);
         
         actionsWrapper.add(actionsGrid, BorderLayout.NORTH);
         actionsWrapper.add(bottomActions, BorderLayout.CENTER);
@@ -131,9 +146,34 @@ public class UserOverviewPanel extends JPanel implements Refreshable {
             UIStyle.showWarning(this, "Please select an account first.");
             return;
         }
-        TransactionDialog dialog = new TransactionDialog(parentFrame, acc, type);
+        TransactionDialog dialog = new TransactionDialog(parentFrame, acc, type, currentUser.getUserId());
         dialog.setVisible(true);
         onActivated(); // Refresh after transaction
+    }
+
+    private void setTransactionPin() {
+        String acc = (String) accountSelector.getSelectedItem();
+        if (acc == null || acc.isEmpty()) {
+            UIStyle.showWarning(this, "Please select an account first.");
+            return;
+        }
+        JPasswordField pinField = new JPasswordField();
+        int result = JOptionPane.showConfirmDialog(parentFrame, pinField,
+                "Enter new Transaction PIN (4-6 digits):", JOptionPane.OK_CANCEL_OPTION);
+        if (result != JOptionPane.OK_OPTION) return;
+
+        String pin = new String(pinField.getPassword()).trim();
+        if (!pin.matches("\\d{4,6}")) {
+            UIStyle.showError(this, "Transaction PIN must be 4 to 6 digits.");
+            return;
+        }
+
+        try {
+            bankingService.setTransactionPassword(acc, pin, currentUser.getUserId());
+            UIStyle.showSuccess(this, "Transaction PIN set successfully for account " + acc);
+        } catch (Exception ex) {
+            UIStyle.showError(this, "Failed to set PIN: " + ex.getMessage());
+        }
     }
 
     private void requestLoan() {
@@ -156,15 +196,18 @@ public class UserOverviewPanel extends JPanel implements Refreshable {
     }
 
     private void updateBalanceDisplay(String accNum) {
-        new SwingWorker<java.math.BigDecimal, Void>() {
+        new SwingWorker<Account, Void>() {
             @Override
-            protected java.math.BigDecimal doInBackground() throws Exception {
-                return bankingService.getAccount(accNum).getBalance();
+            protected Account doInBackground() throws Exception {
+                return bankingService.getAccount(accNum);
             }
             @Override
             protected void done() {
                 try {
-                    lblBalance.setText(banking.util.Validator.formatCurrency(get()));
+                    Account acc = get();
+                    lblBalance.setText(banking.util.Validator.formatCurrency(acc.getBalance()));
+                    String typeStr = acc.getAccountType() != null ? acc.getAccountType().name() : "SAVINGS";
+                    lblAccountType.setText("Account Type: " + typeStr);
                 } catch (Exception ignored) {}
             }
         }.execute();

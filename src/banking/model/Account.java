@@ -3,9 +3,16 @@ package banking.model;
 import java.math.BigDecimal;
 
 public class Account {
+    public enum AccountType {
+        SAVINGS,
+        CURRENT
+    }
+
     private String accountNumber;
     private int customerId;
     private BigDecimal balance = BigDecimal.ZERO;
+    private AccountType accountType = AccountType.SAVINGS;
+    private String transactionPassword;
 
     public Account() {}
 
@@ -24,4 +31,10 @@ public class Account {
 
     public BigDecimal getBalance() { return balance; }
     public void setBalance(BigDecimal balance) { this.balance = balance; }
+
+    public AccountType getAccountType() { return accountType; }
+    public void setAccountType(AccountType accountType) { this.accountType = accountType; }
+
+    public String getTransactionPassword() { return transactionPassword; }
+    public void setTransactionPassword(String transactionPassword) { this.transactionPassword = transactionPassword; }
 }
