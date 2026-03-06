@@ -36,6 +36,8 @@ CREATE TABLE IF NOT EXISTS account (
     account_number TEXT PRIMARY KEY,
     customer_id INTEGER NOT NULL,
     balance REAL NOT NULL DEFAULT 0.00,
+    account_type TEXT NOT NULL DEFAULT 'SAVINGS',
+    transaction_password TEXT,
     FOREIGN KEY (customer_id) REFERENCES customer(customer_id) ON DELETE CASCADE
 );
 
@@ -46,7 +48,16 @@ CREATE TABLE IF NOT EXISTS "transaction" (
     type TEXT CHECK(type IN ('DEPOSIT', 'WITHDRAW', 'TRANSFER')) NOT NULL,
     amount REAL NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    performed_by INTEGER,
     FOREIGN KEY (account_number) REFERENCES account(account_number) ON DELETE CASCADE
+);
+
+-- audit_log table
+CREATE TABLE IF NOT EXISTS audit_log (
+    log_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    action TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Insert default admin user (password: admin123)

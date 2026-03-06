@@ -31,7 +31,9 @@ public class AuthService {
                     banking.model.Customer newCustomer = bankingService.createCustomer(username, "000-000-0000", username + "@securebank.com", "N/A");
                     newCustomer.setUserId(user.getUserId());
                     bankingService.updateCustomer(newCustomer);
-                    bankingService.createAccount(newCustomer.getCustomerId());
+                    // Default SAVINGS account with a generated 4-digit transaction PIN
+                    String defaultPin = String.format("%04d", new java.util.Random().nextInt(10000));
+                    bankingService.createAccount(newCustomer.getCustomerId(), banking.model.Account.AccountType.SAVINGS, defaultPin);
                 }
             }
             return user;

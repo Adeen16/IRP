@@ -12,7 +12,7 @@ public class AccountDAOImpl implements AccountDAO {
 
     @Override
     public Account findByAccountNumber(String accNumber) {
-        String sql = "SELECT account_number, customer_id, balance FROM account WHERE account_number = ?";
+        String sql = "SELECT account_number, customer_id, balance, account_type, transaction_password FROM account WHERE account_number = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, accNumber);
@@ -22,6 +22,9 @@ public class AccountDAOImpl implements AccountDAO {
                     acc.setAccountNumber(rs.getString("account_number"));
                     acc.setCustomerId(rs.getInt("customer_id"));
                     acc.setBalance(rs.getBigDecimal("balance"));
+                    String typeStr = rs.getString("account_type");
+                    if (typeStr != null) acc.setAccountType(Account.AccountType.valueOf(typeStr));
+                    acc.setTransactionPassword(rs.getString("transaction_password"));
                     return acc;
                 }
             }
@@ -33,12 +36,14 @@ public class AccountDAOImpl implements AccountDAO {
 
     @Override
     public boolean create(Account account) {
-        String sql = "INSERT INTO account (account_number, customer_id, balance) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO account (account_number, customer_id, balance, account_type, transaction_password) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, account.getAccountNumber());
             stmt.setInt(2, account.getCustomerId());
             stmt.setBigDecimal(3, account.getBalance());
+            stmt.setString(4, account.getAccountType() != null ? account.getAccountType().name() : "SAVINGS");
+            stmt.setString(5, account.getTransactionPassword());
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -63,7 +68,7 @@ public class AccountDAOImpl implements AccountDAO {
     @Override
     public List<Account> findByCustomerId(int customerId) {
         List<Account> list = new ArrayList<>();
-        String sql = "SELECT account_number, customer_id, balance FROM account WHERE customer_id = ?";
+        String sql = "SELECT account_number, customer_id, balance, account_type, transaction_password FROM account WHERE customer_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, customerId);
@@ -73,6 +78,9 @@ public class AccountDAOImpl implements AccountDAO {
                     acc.setAccountNumber(rs.getString("account_number"));
                     acc.setCustomerId(rs.getInt("customer_id"));
                     acc.setBalance(rs.getBigDecimal("balance"));
+                    String typeStr = rs.getString("account_type");
+                    if (typeStr != null) acc.setAccountType(Account.AccountType.valueOf(typeStr));
+                    acc.setTransactionPassword(rs.getString("transaction_password"));
                     list.add(acc);
                 }
             }
@@ -85,7 +93,7 @@ public class AccountDAOImpl implements AccountDAO {
     @Override
     public List<Account> findAll() {
         List<Account> list = new ArrayList<>();
-        String sql = "SELECT account_number, customer_id, balance FROM account";
+        String sql = "SELECT account_number, customer_id, balance, account_type, transaction_password FROM account";
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -94,6 +102,9 @@ public class AccountDAOImpl implements AccountDAO {
                 acc.setAccountNumber(rs.getString("account_number"));
                 acc.setCustomerId(rs.getInt("customer_id"));
                 acc.setBalance(rs.getBigDecimal("balance"));
+                String typeStr = rs.getString("account_type");
+                if (typeStr != null) acc.setAccountType(Account.AccountType.valueOf(typeStr));
+                acc.setTransactionPassword(rs.getString("transaction_password"));
                 list.add(acc);
             }
         } catch (SQLException e) {
@@ -131,5 +142,19 @@ public class AccountDAOImpl implements AccountDAO {
             e.printStackTrace();
         }
         return BigDecimal.ZERO;
+    }
+
+    @Override
+    public boolean updateTransactionPassword(String accNumber, String hashedPassword) {
+        String sql = "UPDATE account SET transaction_password = ? WHERE account_number = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, hashedPassword);
+            stmt.setString(2, accNumber);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

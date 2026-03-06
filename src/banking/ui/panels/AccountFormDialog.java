@@ -9,7 +9,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.math.BigDecimal;
-import java.util.List;
 
 /**
  * Modal dialog for creating a new bank account linked to an existing customer.
@@ -21,6 +20,8 @@ public class AccountFormDialog extends JDialog {
     private JTextField txtPhone;
     private JTextField txtEmail;
     private JTextField txtInitialDeposit;
+    private JComboBox<String> cmbAccountType;
+    private JPasswordField txtTransactionPin;
 
     public AccountFormDialog(Window parent, BankingService bankingService) {
         super(parent, "Create New Account", ModalityType.APPLICATION_MODAL);
@@ -29,7 +30,7 @@ public class AccountFormDialog extends JDialog {
     }
 
     private void initializeUI() {
-        setSize(450, 450);
+        setSize(450, 550);
         setLocationRelativeTo(getOwner());
         setResizable(false);
 
@@ -74,6 +75,22 @@ public class AccountFormDialog extends JDialog {
         UIStyle.styleTextField(txtEmail);
         panel.add(txtEmail, gbc);
 
+        // Account Type
+        gbc.gridy++;
+        panel.add(createLabel("Account Type *"), gbc);
+        gbc.gridy++;
+        cmbAccountType = new JComboBox<>(new String[]{"SAVINGS", "CURRENT"});
+        cmbAccountType.setFont(UIStyle.SMALL_FONT);
+        panel.add(cmbAccountType, gbc);
+
+        // Transaction PIN
+        gbc.gridy++;
+        panel.add(createLabel("Transaction PIN (4-6 digits) *"), gbc);
+        gbc.gridy++;
+        txtTransactionPin = new JPasswordField();
+        UIStyle.styleTextField(txtTransactionPin);
+        panel.add(txtTransactionPin, gbc);
+
         // Initial deposit
         gbc.gridy++;
         panel.add(createLabel("Initial Deposit ($)"), gbc);
@@ -114,16 +131,26 @@ public class AccountFormDialog extends JDialog {
         String name = txtName.getText().trim();
         String phone = txtPhone.getText().trim();
         String email = txtEmail.getText().trim();
+        String pin = new String(txtTransactionPin.getPassword()).trim();
 
         if (name.isEmpty() || phone.isEmpty() || email.isEmpty()) {
             UIStyle.showError(this, "Please fill in all customer details.");
             return;
         }
 
+        // Validate transaction PIN
+        if (!pin.matches("\\d{4,6}")) {
+            UIStyle.showError(this, "Transaction PIN must be 4 to 6 digits.");
+            return;
+        }
+
+        Account.AccountType accountType = cmbAccountType.getSelectedIndex() == 0
+                ? Account.AccountType.SAVINGS : Account.AccountType.CURRENT;
+
         BigDecimal initialDeposit;
         try {
-            initialDeposit = new java.math.BigDecimal(txtInitialDeposit.getText().trim());
-            if (initialDeposit.compareTo(java.math.BigDecimal.ZERO) < 0) {
+            initialDeposit = new BigDecimal(txtInitialDeposit.getText().trim());
+            if (initialDeposit.compareTo(BigDecimal.ZERO) < 0) {
                 UIStyle.showError(this, "Initial deposit cannot be negative.");
                 return;
             }
@@ -133,6 +160,9 @@ public class AccountFormDialog extends JDialog {
         }
 
         final BigDecimal deposit = initialDeposit;
+        final String transactionPin = pin;
+        final Account.AccountType acctType = accountType;
+
         new SwingWorker<String, Void>() {
             @Override
             protected String doInBackground() throws Exception {
@@ -144,9 +174,10 @@ public class AccountFormDialog extends JDialog {
                     throw new Exception("Failed to create customer.");
                 }
 
-                Account account = bankingService.createAccount(customerId);
-                if (deposit.compareTo(java.math.BigDecimal.ZERO) > 0) {
-                    bankingService.deposit(account.getAccountNumber(), deposit);
+                Account account = bankingService.createAccount(customerId, acctType, transactionPin);
+                if (deposit.compareTo(BigDecimal.ZERO) > 0) {
+                    // userId 0 indicates admin/system deposit during account creation
+                    bankingService.deposit(account.getAccountNumber(), deposit, 0);
                 }
                 return account.getAccountNumber();
             }

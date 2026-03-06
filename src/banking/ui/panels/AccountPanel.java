@@ -69,7 +69,7 @@ public class AccountPanel extends JPanel implements Refreshable {
         add(headerArea, BorderLayout.NORTH);
 
         // --- Table ---
-        String[] columns = {"Account #", "Customer", "Balance"};
+        String[] columns = {"Account #", "Customer", "Type", "Balance"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -134,6 +134,7 @@ public class AccountPanel extends JPanel implements Refreshable {
             tableModel.addRow(new Object[]{
                     a.getAccountNumber(),
                     customerName,
+                    a.getAccountType() != null ? a.getAccountType().name() : "SAVINGS",
                     banking.util.Validator.formatCurrency(a.getBalance())
             });
         }
