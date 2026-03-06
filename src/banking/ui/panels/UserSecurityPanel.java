@@ -59,7 +59,7 @@ public class UserSecurityPanel extends JPanel implements Refreshable {
         card.add(txtOldPassword, gbc);
 
         gbc.gridy++;
-        card.add(new JLabel("New Password (min 6 chars)"), gbc);
+        card.add(new JLabel("New Password (min 8 chars, upper/lower/number)"), gbc);
         gbc.gridy++;
         txtNewPassword = new JPasswordField();
         UIStyle.stylePasswordField(txtNewPassword);

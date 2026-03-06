@@ -6,9 +6,11 @@ import java.sql.Timestamp;
 public class Loan {
     private int loanId;
     private int customerId;
-    private BigDecimal amount;
+    private BigDecimal loanAmount;
     private BigDecimal interestRate;
-    private int termMonths;
+    private int loanDuration;
+    private BigDecimal emi;
+    private String loanType;
     private String status;
     private Timestamp createdAt;
 
@@ -16,12 +18,15 @@ public class Loan {
     public Loan() {}
 
     // Constructor with all fields
-    public Loan(int loanId, int customerId, BigDecimal amount, BigDecimal interestRate, int termMonths, String status, Timestamp createdAt) {
+    public Loan(int loanId, int customerId, BigDecimal loanAmount, BigDecimal interestRate, int loanDuration,
+                BigDecimal emi, String loanType, String status, Timestamp createdAt) {
         this.loanId = loanId;
         this.customerId = customerId;
-        this.amount = amount;
+        this.loanAmount = loanAmount;
         this.interestRate = interestRate;
-        this.termMonths = termMonths;
+        this.loanDuration = loanDuration;
+        this.emi = emi;
+        this.loanType = loanType;
         this.status = status;
         this.createdAt = createdAt;
     }
@@ -29,18 +34,28 @@ public class Loan {
     // Getters
     public int getLoanId() { return loanId; }
     public int getCustomerId() { return customerId; }
-    public BigDecimal getAmount() { return amount; }
+    public BigDecimal getLoanAmount() { return loanAmount; }
     public BigDecimal getInterestRate() { return interestRate; }
-    public int getTermMonths() { return termMonths; }
+    public int getLoanDuration() { return loanDuration; }
+    public BigDecimal getEmi() { return emi; }
+    public String getLoanType() { return loanType; }
     public String getStatus() { return status; }
     public Timestamp getCreatedAt() { return createdAt; }
+
+    public BigDecimal getAmount() { return loanAmount; }
+    public int getTermMonths() { return loanDuration; }
 
     // Setters
     public void setLoanId(int loanId) { this.loanId = loanId; }
     public void setCustomerId(int customerId) { this.customerId = customerId; }
-    public void setAmount(BigDecimal amount) { this.amount = amount; }
+    public void setLoanAmount(BigDecimal loanAmount) { this.loanAmount = loanAmount; }
     public void setInterestRate(BigDecimal interestRate) { this.interestRate = interestRate; }
-    public void setTermMonths(int termMonths) { this.termMonths = termMonths; }
+    public void setLoanDuration(int loanDuration) { this.loanDuration = loanDuration; }
+    public void setEmi(BigDecimal emi) { this.emi = emi; }
+    public void setLoanType(String loanType) { this.loanType = loanType; }
     public void setStatus(String status) { this.status = status; }
     public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
+
+    public void setAmount(BigDecimal amount) { this.loanAmount = amount; }
+    public void setTermMonths(int termMonths) { this.loanDuration = termMonths; }
 }
