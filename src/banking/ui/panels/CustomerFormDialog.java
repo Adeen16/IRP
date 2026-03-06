@@ -30,12 +30,13 @@ public class CustomerFormDialog extends JDialog {
     }
 
     private void initializeUI() {
+        UIStyle.styleDialog(this);
         setSize(450, 400);
         setLocationRelativeTo(getOwner());
         setResizable(false);
 
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBackground(Color.WHITE);
+        panel.setBackground(UIStyle.CARD_COLOR);
         panel.setBorder(new EmptyBorder(25, 25, 25, 25));
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -88,14 +89,14 @@ public class CustomerFormDialog extends JDialog {
         gbc.gridy++;
         gbc.insets = new Insets(20, 5, 5, 5);
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        btnPanel.setBackground(Color.WHITE);
+        btnPanel.setBackground(UIStyle.CARD_COLOR);
 
         JButton btnCancel = new JButton("Cancel");
-        UIStyle.styleButton(btnCancel, UIStyle.SECONDARY_COLOR);
+        UIStyle.styleSecondaryButton(btnCancel);
         btnCancel.addActionListener(e -> dispose());
 
         JButton btnSave = new JButton(existing == null ? "Add Customer" : "Save Changes");
-        UIStyle.styleButton(btnSave, UIStyle.ACCENT_COLOR);
+        UIStyle.stylePrimaryButton(btnSave);
         btnSave.addActionListener(e -> handleSave());
 
         btnPanel.add(btnCancel);

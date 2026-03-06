@@ -48,7 +48,9 @@ public class TransactionPanel extends JPanel implements Refreshable {
         JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         toolbar.setBackground(UIStyle.BACKGROUND_COLOR);
 
-        toolbar.add(new JLabel("Account:"));
+        JLabel accountLabel = new JLabel("Account:");
+        UIStyle.styleLabel(accountLabel);
+        toolbar.add(accountLabel);
         accountCombo = new JComboBox<>();
         accountCombo.addItem("ALL");
         UIStyle.styleComboBox(accountCombo);
@@ -56,20 +58,24 @@ public class TransactionPanel extends JPanel implements Refreshable {
         toolbar.add(accountCombo);
 
         toolbar.add(Box.createHorizontalStrut(15));
-        toolbar.add(new JLabel("From:"));
+        JLabel fromLabel = new JLabel("From:");
+        UIStyle.styleLabel(fromLabel);
+        toolbar.add(fromLabel);
         txtFrom = new JTextField(10);
         UIStyle.styleTextField(txtFrom);
         txtFrom.putClientProperty("JTextField.placeholderText", "yyyy-MM-dd");
         toolbar.add(txtFrom);
 
-        toolbar.add(new JLabel("To:"));
+        JLabel toLabel = new JLabel("To:");
+        UIStyle.styleLabel(toLabel);
+        toolbar.add(toLabel);
         txtTo = new JTextField(10);
         UIStyle.styleTextField(txtTo);
         txtTo.putClientProperty("JTextField.placeholderText", "yyyy-MM-dd");
         toolbar.add(txtTo);
 
         JButton btnSearch = new JButton("Search");
-        UIStyle.styleButton(btnSearch, UIStyle.ACCENT_COLOR);
+        UIStyle.stylePrimaryButton(btnSearch);
         btnSearch.addActionListener(e -> searchTransactions());
         toolbar.add(btnSearch);
 
@@ -79,7 +85,7 @@ public class TransactionPanel extends JPanel implements Refreshable {
         toolbar.add(btnLast5);
 
         JButton btnAll = new JButton("Show All");
-        UIStyle.styleButton(btnAll, UIStyle.SECONDARY_COLOR);
+        UIStyle.styleSecondaryButton(btnAll);
         btnAll.addActionListener(e -> {
             txtFrom.setText("");
             txtTo.setText("");
@@ -110,10 +116,10 @@ public class TransactionPanel extends JPanel implements Refreshable {
         transactionTable.getColumnModel().getColumn(0).setMaxWidth(60);
 
         JScrollPane scrollPane = new JScrollPane(transactionTable);
-        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(226, 232, 240)));
+        UIStyle.styleScrollPane(scrollPane);
 
         ModernUIComponents.RoundedPanel tableCard =
-                new ModernUIComponents.RoundedPanel(15, Color.WHITE);
+                new ModernUIComponents.RoundedPanel(15, UIStyle.CARD_COLOR);
         tableCard.setLayout(new BorderLayout());
         tableCard.setBorder(new EmptyBorder(15, 15, 15, 15));
         tableCard.add(scrollPane, BorderLayout.CENTER);

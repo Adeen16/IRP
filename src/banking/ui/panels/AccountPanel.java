@@ -52,7 +52,7 @@ public class AccountPanel extends JPanel implements Refreshable {
         btnAdd.addActionListener(e -> openCreateDialog());
 
         JButton btnRefresh = new JButton("Refresh");
-        UIStyle.styleButton(btnRefresh, UIStyle.SECONDARY_COLOR);
+        UIStyle.styleSecondaryButton(btnRefresh);
         btnRefresh.addActionListener(e -> loadAccounts());
 
         rightButtons.add(btnAdd);
@@ -82,10 +82,10 @@ public class AccountPanel extends JPanel implements Refreshable {
         accountTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         JScrollPane scrollPane = new JScrollPane(accountTable);
-        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(226, 232, 240)));
+        UIStyle.styleScrollPane(scrollPane);
 
         ModernUIComponents.RoundedPanel tableCard =
-                new ModernUIComponents.RoundedPanel(15, Color.WHITE);
+                new ModernUIComponents.RoundedPanel(15, UIStyle.CARD_COLOR);
         tableCard.setLayout(new BorderLayout());
         tableCard.setBorder(new EmptyBorder(15, 15, 15, 15));
         tableCard.add(scrollPane, BorderLayout.CENTER);

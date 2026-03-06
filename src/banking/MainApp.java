@@ -31,8 +31,8 @@ public class MainApp {
             boolean connected = DatabaseConnection.testConnection();
             if (!connected) {
                 int option = JOptionPane.showConfirmDialog(null, 
-                    "Could not connect to MySQL database.\n" +
-                    "Please ensure MySQL is running and the 'banking_system' database is created.\n\n" +
+                    "Could not connect to SQLite database.\n" +
+                    "Please ensure bank.db exists and is accessible.\n\n" +
                     "Would you like to try connecting with default settings anyway?", 
                     "Database Connection Error", 
                     JOptionPane.YES_NO_OPTION, 

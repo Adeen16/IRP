@@ -55,24 +55,26 @@ public class AdminDashboard extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(1100, 800));
+        getContentPane().setBackground(UIStyle.BACKGROUND_COLOR);
 
         // ─── Sidebar ─────────────────────────────────────────────
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
         sidebar.setBackground(UIStyle.PRIMARY_COLOR);
+        sidebar.setOpaque(true);
         sidebar.setPreferredSize(new Dimension(280, 0));
         sidebar.setBorder(new EmptyBorder(30, 20, 30, 20));
 
         JLabel lblBrand = new JLabel("SECURE BANK");
         lblBrand.setFont(UIStyle.TITLE_FONT);
-        lblBrand.setForeground(Color.WHITE);
+        lblBrand.setForeground(UIStyle.TEXT_COLOR);
         lblBrand.setAlignmentX(Component.CENTER_ALIGNMENT);
         sidebar.add(lblBrand);
         sidebar.add(Box.createRigidArea(new Dimension(0, 10)));
 
         JLabel lblRole = new JLabel("Admin Dashboard");
         lblRole.setFont(UIStyle.SMALL_FONT);
-        lblRole.setForeground(new Color(148, 163, 184));
+        lblRole.setForeground(UIStyle.TEXT_LIGHT);
         lblRole.setAlignmentX(Component.CENTER_ALIGNMENT);
         sidebar.add(lblRole);
         sidebar.add(Box.createRigidArea(new Dimension(0, 40)));
@@ -101,9 +103,10 @@ public class AdminDashboard extends JFrame {
 
         // ─── Top Header ──────────────────────────────────────────
         JPanel topHeader = new JPanel(new BorderLayout());
-        topHeader.setBackground(Color.WHITE);
+        topHeader.setBackground(UIStyle.CARD_COLOR);
+        topHeader.setOpaque(true);
         topHeader.setPreferredSize(new Dimension(0, 80));
-        topHeader.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(226, 232, 240)));
+        topHeader.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, UIStyle.BORDER_COLOR));
 
         JLabel lblHeader = new JLabel("Welcome back, " + adminUser.getUsername());
         lblHeader.setFont(UIStyle.HEADER_FONT);
@@ -115,6 +118,7 @@ public class AdminDashboard extends JFrame {
         cardLayout = new CardLayout();
         contentArea = new JPanel(cardLayout);
         contentArea.setBackground(UIStyle.BACKGROUND_COLOR);
+        contentArea.setOpaque(true);
 
         overviewPanel    = new OverviewPanel(analyticsService);
         customerPanel    = new CustomerPanel(bankingService);
@@ -133,6 +137,7 @@ public class AdminDashboard extends JFrame {
         // ─── Main assembly ───────────────────────────────────────
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(UIStyle.BACKGROUND_COLOR);
+        mainPanel.setOpaque(true);
         mainPanel.add(topHeader, BorderLayout.NORTH);
         mainPanel.add(contentArea, BorderLayout.CENTER);
 
@@ -150,15 +155,18 @@ public class AdminDashboard extends JFrame {
     private JButton addNavButton(JPanel sidebar, String text, String panelName) {
         JButton btn = new JButton(text);
         btn.setFont(UIStyle.BUTTON_FONT);
-        btn.setForeground(new Color(148, 163, 184)); // Slate 400
+        btn.setForeground(UIStyle.TEXT_LIGHT);
         btn.setBackground(UIStyle.PRIMARY_COLOR);
         btn.setFocusPainted(false);
-        btn.setBorderPainted(false);
+        btn.setBorderPainted(true);
         btn.setHorizontalAlignment(SwingConstants.LEFT);
         btn.setMaximumSize(new Dimension(260, 48));
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btn.setBorder(new EmptyBorder(10, 20, 10, 10));
+        btn.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(UIStyle.PRIMARY_COLOR, 1, true),
+                new EmptyBorder(10, 20, 10, 10)
+        ));
 
         btn.addActionListener(e -> {
             System.out.println("Nav Button Clicked: " + text + " -> " + panelName);
@@ -178,10 +186,21 @@ public class AdminDashboard extends JFrame {
     private void setActiveButton(JButton selected) {
         for (JButton btn : navButtons) {
             btn.setBackground(UIStyle.PRIMARY_COLOR);
-            btn.setForeground(new Color(148, 163, 184)); // Slate 400
+            btn.setForeground(UIStyle.TEXT_LIGHT);
+            btn.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(255, 255, 255, 8), 1, true),
+                    new EmptyBorder(10, 20, 10, 10)
+            ));
         }
-        selected.setBackground(new Color(51, 65, 85));   // Slate 700
-        selected.setForeground(Color.WHITE);
+        selected.setBackground(UIStyle.SECONDARY_COLOR);
+        selected.setForeground(UIStyle.ACCENT_HOVER);
+        selected.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createMatteBorder(0, 3, 0, 0, UIStyle.ACCENT_COLOR),
+                        BorderFactory.createLineBorder(new Color(201, 162, 39, 70), 1, true)
+                ),
+                new EmptyBorder(10, 16, 10, 10)
+        ));
         activeButton = selected;
     }
 

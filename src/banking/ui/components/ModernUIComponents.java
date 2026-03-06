@@ -22,7 +22,7 @@ public class ModernUIComponents {
             Dimension arcs = new Dimension(cornerRadius, cornerRadius);
             int width = getWidth();
             int height = getHeight();
-            Graphics2D graphics = (Graphics2D) g;
+            Graphics2D graphics = (Graphics2D) g.create();
             graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
             //Draws the rounded panel with borders.
@@ -32,6 +32,9 @@ public class ModernUIComponents {
                 graphics.setColor(getBackground());
             }
             graphics.fillRoundRect(0, 0, width - 1, height - 1, arcs.width, arcs.height);
+            graphics.setColor(UIStyle.BORDER_COLOR);
+            graphics.drawRoundRect(0, 0, width - 1, height - 1, arcs.width, arcs.height);
+            graphics.dispose();
         }
     }
 
@@ -49,10 +52,12 @@ public class ModernUIComponents {
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(new Color(0, 0, 0, 20)); // Subtle shadow
+            g2.setColor(new Color(0, 0, 0, 70));
             g2.fillRoundRect(shadowSize, shadowSize, getWidth() - shadowSize * 2, getHeight() - shadowSize * 2, 15, 15);
             g2.setColor(UIStyle.CARD_COLOR);
             g2.fillRoundRect(0, 0, getWidth() - shadowSize * 2, getHeight() - shadowSize * 2, 15, 15);
+            g2.setColor(UIStyle.BORDER_COLOR);
+            g2.drawRoundRect(0, 0, getWidth() - shadowSize * 2, getHeight() - shadowSize * 2, 15, 15);
             g2.dispose();
             super.paintComponent(g);
         }

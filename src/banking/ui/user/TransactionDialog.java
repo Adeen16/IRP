@@ -27,6 +27,7 @@ public class TransactionDialog extends JDialog {
     }
 
     private void initializeUI() {
+        UIStyle.styleDialog(this);
         boolean needsPin = type.equals("WITHDRAW") || type.equals("TRANSFER");
         int height = type.equals("TRANSFER") ? (needsPin ? 420 : 350) : (needsPin ? 320 : 250);
         setSize(400, height);
@@ -35,7 +36,7 @@ public class TransactionDialog extends JDialog {
 
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        panel.setBackground(Color.WHITE);
+        panel.setBackground(UIStyle.CARD_COLOR);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(10, 5, 10, 5);
@@ -44,12 +45,15 @@ public class TransactionDialog extends JDialog {
         gbc.gridx = 0; gbc.gridy = 0;
         JLabel lblAcc = new JLabel("Account: " + accountNumber);
         lblAcc.setFont(UIStyle.SMALL_FONT);
+        lblAcc.setForeground(UIStyle.TEXT_LIGHT);
         panel.add(lblAcc, gbc);
 
         // Target Account (Only for Transfer)
         if (type.equals("TRANSFER")) {
             gbc.gridy++;
-            panel.add(new JLabel("Recipient Account Number:"), gbc);
+            JLabel recipientLabel = new JLabel("Recipient Account Number:");
+            recipientLabel.setForeground(UIStyle.TEXT_LIGHT);
+            panel.add(recipientLabel, gbc);
             gbc.gridy++;
             txtTargetAccount = new JTextField();
             UIStyle.styleTextField(txtTargetAccount);
@@ -58,7 +62,9 @@ public class TransactionDialog extends JDialog {
 
         // Amount
         gbc.gridy++;
-        panel.add(new JLabel("Enter Amount ($):"), gbc);
+        JLabel amountLabel = new JLabel("Enter Amount ($):");
+        amountLabel.setForeground(UIStyle.TEXT_LIGHT);
+        panel.add(amountLabel, gbc);
         gbc.gridy++;
         txtAmount = new JTextField();
         UIStyle.styleTextField(txtAmount);
@@ -67,7 +73,9 @@ public class TransactionDialog extends JDialog {
         // Transaction PIN (for WITHDRAW and TRANSFER)
         if (needsPin) {
             gbc.gridy++;
-            panel.add(new JLabel("Transaction PIN:"), gbc);
+            JLabel pinLabel = new JLabel("Transaction PIN:");
+            pinLabel.setForeground(UIStyle.TEXT_LIGHT);
+            panel.add(pinLabel, gbc);
             gbc.gridy++;
             txtTransactionPin = new JPasswordField();
             UIStyle.styleTextField(txtTransactionPin);
@@ -79,6 +87,7 @@ public class TransactionDialog extends JDialog {
         gbc.insets = new Insets(20, 5, 5, 5);
         JButton btnAction = new JButton(type);
         if (type.equals("WITHDRAW")) UIStyle.styleDangerButton(btnAction);
+        else if (type.equals("TRANSFER")) UIStyle.styleSecondaryButton(btnAction);
         else UIStyle.styleSuccessButton(btnAction);
         
         btnAction.addActionListener(e -> handleAction());

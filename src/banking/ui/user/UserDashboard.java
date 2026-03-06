@@ -50,24 +50,26 @@ public class UserDashboard extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setMinimumSize(new Dimension(1000, 750));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        getContentPane().setBackground(UIStyle.BACKGROUND_COLOR);
 
         // --- Sidebar ---
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
         sidebar.setBackground(UIStyle.PRIMARY_COLOR);
+        sidebar.setOpaque(true);
         sidebar.setPreferredSize(new Dimension(280, 0));
         sidebar.setBorder(new EmptyBorder(30, 20, 30, 20));
 
         JLabel lblBrand = new JLabel("SECURE BANK");
         lblBrand.setFont(UIStyle.TITLE_FONT);
-        lblBrand.setForeground(Color.WHITE);
+        lblBrand.setForeground(UIStyle.TEXT_COLOR);
         lblBrand.setAlignmentX(Component.CENTER_ALIGNMENT);
         sidebar.add(lblBrand);
         sidebar.add(Box.createRigidArea(new Dimension(0, 10)));
 
         JLabel lblRole = new JLabel("Customer Portal");
         lblRole.setFont(UIStyle.SMALL_FONT);
-        lblRole.setForeground(new Color(148, 163, 184));
+        lblRole.setForeground(UIStyle.TEXT_LIGHT);
         lblRole.setAlignmentX(Component.CENTER_ALIGNMENT);
         sidebar.add(lblRole);
         sidebar.add(Box.createRigidArea(new Dimension(0, 40)));
@@ -93,9 +95,10 @@ public class UserDashboard extends JFrame {
 
         // --- Header ---
         JPanel topHeader = new JPanel(new BorderLayout());
-        topHeader.setBackground(Color.WHITE);
+        topHeader.setBackground(UIStyle.CARD_COLOR);
+        topHeader.setOpaque(true);
         topHeader.setPreferredSize(new Dimension(0, 80));
-        topHeader.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(226, 232, 240)));
+        topHeader.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, UIStyle.BORDER_COLOR));
 
         JLabel lblHeader = new JLabel("Logged in as: " + currentUser.getUsername());
         lblHeader.setFont(UIStyle.HEADER_FONT);
@@ -107,6 +110,7 @@ public class UserDashboard extends JFrame {
         cardLayout = new CardLayout();
         contentArea = new JPanel(cardLayout);
         contentArea.setBackground(UIStyle.BACKGROUND_COLOR);
+        contentArea.setOpaque(true);
 
         overviewPanel  = new UserOverviewPanel(currentUser, bankingService, this);
         statementPanel = new UserStatementPanel(currentUser, bankingService);
@@ -120,6 +124,8 @@ public class UserDashboard extends JFrame {
 
         // Assembly
         JPanel mainLayout = new JPanel(new BorderLayout());
+        mainLayout.setBackground(UIStyle.BACKGROUND_COLOR);
+        mainLayout.setOpaque(true);
         mainLayout.add(topHeader, BorderLayout.NORTH);
         mainLayout.add(contentArea, BorderLayout.CENTER);
 
@@ -134,15 +140,18 @@ public class UserDashboard extends JFrame {
     private JButton addNavButton(JPanel sidebar, String text, String panelName) {
         JButton btn = new JButton(text);
         btn.setFont(UIStyle.BUTTON_FONT);
-        btn.setForeground(new Color(148, 163, 184));
+        btn.setForeground(UIStyle.TEXT_LIGHT);
         btn.setBackground(UIStyle.PRIMARY_COLOR);
         btn.setFocusPainted(false);
-        btn.setBorderPainted(false);
+        btn.setBorderPainted(true);
         btn.setHorizontalAlignment(SwingConstants.LEFT);
         btn.setMaximumSize(new Dimension(260, 48));
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btn.setBorder(new EmptyBorder(10, 20, 10, 10));
+        btn.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(UIStyle.PRIMARY_COLOR, 1, true),
+            new EmptyBorder(10, 20, 10, 10)
+        ));
 
         btn.addActionListener(e -> {
             setActiveButton(btn);
@@ -158,10 +167,21 @@ public class UserDashboard extends JFrame {
     private void setActiveButton(JButton selected) {
         for (JButton btn : navButtons) {
             btn.setBackground(UIStyle.PRIMARY_COLOR);
-            btn.setForeground(new Color(148, 163, 184));
+            btn.setForeground(UIStyle.TEXT_LIGHT);
+            btn.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(255, 255, 255, 8), 1, true),
+                new EmptyBorder(10, 20, 10, 10)
+            ));
         }
-        selected.setBackground(new Color(51, 65, 85));
-        selected.setForeground(Color.WHITE);
+        selected.setBackground(UIStyle.SECONDARY_COLOR);
+        selected.setForeground(UIStyle.ACCENT_HOVER);
+        selected.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 3, 0, 0, UIStyle.ACCENT_COLOR),
+                BorderFactory.createLineBorder(new Color(201, 162, 39, 70), 1, true)
+            ),
+            new EmptyBorder(10, 16, 10, 10)
+        ));
     }
 
     private void switchPanel(String name) {

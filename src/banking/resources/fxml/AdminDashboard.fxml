@@ -20,7 +20,7 @@
         
         <HBox spacing="15" alignment="CENTER">
             <Button text="Launch Legacy Swing Dashboard" styleClass="btn-primary" onAction="#launchLegacyDashboard"/>
-            <Button text="Logout" styleClass="btn-secondary" onAction="#handleLogout"/>
+            <Button text="Logout" styleClass="btn-secondary btn-danger" onAction="#handleLogout"/>
         </HBox>
     </VBox>
 </VBox>

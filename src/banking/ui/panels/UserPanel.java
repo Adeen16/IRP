@@ -50,7 +50,7 @@ public class UserPanel extends JPanel implements Refreshable {
         btnAdd.addActionListener(e -> openAddDialog());
 
         JButton btnRefresh = new JButton("Refresh");
-        UIStyle.styleButton(btnRefresh, UIStyle.SECONDARY_COLOR);
+        UIStyle.styleSecondaryButton(btnRefresh);
         btnRefresh.addActionListener(e -> loadUsers());
 
         toolbar.add(btnAdd);
@@ -78,10 +78,10 @@ public class UserPanel extends JPanel implements Refreshable {
         userTable.getColumnModel().getColumn(0).setMaxWidth(60);
 
         JScrollPane scrollPane = new JScrollPane(userTable);
-        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(226, 232, 240)));
+        UIStyle.styleScrollPane(scrollPane);
 
         ModernUIComponents.RoundedPanel tableCard =
-                new ModernUIComponents.RoundedPanel(15, Color.WHITE);
+                new ModernUIComponents.RoundedPanel(15, UIStyle.CARD_COLOR);
         tableCard.setLayout(new BorderLayout());
         tableCard.setBorder(new EmptyBorder(15, 15, 15, 15));
         tableCard.add(scrollPane, BorderLayout.CENTER);

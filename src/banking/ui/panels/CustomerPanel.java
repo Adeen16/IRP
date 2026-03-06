@@ -48,7 +48,7 @@ public class CustomerPanel extends JPanel implements Refreshable {
         searchField.addActionListener(e -> loadCustomers());
 
         JButton btnSearch = new JButton("Search");
-        UIStyle.styleButton(btnSearch, UIStyle.ACCENT_COLOR);
+        UIStyle.stylePrimaryButton(btnSearch);
         btnSearch.addActionListener(e -> loadCustomers());
 
         JButton btnAdd = new JButton("+ Add Customer");
@@ -56,7 +56,7 @@ public class CustomerPanel extends JPanel implements Refreshable {
         btnAdd.addActionListener(e -> openAddDialog());
 
         JButton btnRefresh = new JButton("Refresh");
-        UIStyle.styleButton(btnRefresh, UIStyle.SECONDARY_COLOR);
+        UIStyle.styleSecondaryButton(btnRefresh);
         btnRefresh.addActionListener(e -> {
             searchField.setText("");
             loadCustomers();
@@ -97,10 +97,10 @@ public class CustomerPanel extends JPanel implements Refreshable {
         customerTable.getColumnModel().getColumn(0).setMaxWidth(60);
 
         JScrollPane scrollPane = new JScrollPane(customerTable);
-        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(226, 232, 240)));
+        UIStyle.styleScrollPane(scrollPane);
 
         ModernUIComponents.RoundedPanel tableCard =
-                new ModernUIComponents.RoundedPanel(15, Color.WHITE);
+                new ModernUIComponents.RoundedPanel(15, UIStyle.CARD_COLOR);
         tableCard.setLayout(new BorderLayout());
         tableCard.setBorder(new EmptyBorder(15, 15, 15, 15));
         tableCard.add(scrollPane, BorderLayout.CENTER);
@@ -112,7 +112,7 @@ public class CustomerPanel extends JPanel implements Refreshable {
         bottomBar.setBackground(UIStyle.BACKGROUND_COLOR);
 
         JButton btnEdit = new JButton("Edit Selected");
-        UIStyle.styleButton(btnEdit, UIStyle.ACCENT_COLOR);
+        UIStyle.stylePrimaryButton(btnEdit);
         btnEdit.addActionListener(e -> editSelected());
 
         JButton btnDelete = new JButton("Delete Selected");

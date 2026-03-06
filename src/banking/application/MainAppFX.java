@@ -1,5 +1,6 @@
 package banking.application;
 
+import banking.ui.ThemeManager;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -19,12 +20,11 @@ public class MainAppFX extends Application {
         // Scene setup
         Scene scene = new Scene(root, 900, 600);
         
-        // Load global CSS mapping to the blue/navy theme
-        String cssPath = getClass().getResource("/banking/resources/css/global.css").toExternalForm();
-        scene.getStylesheets().add(cssPath);
+        ThemeManager.apply(scene);
 
         primaryStage.setTitle("Secure Banking System");
         primaryStage.setScene(scene);
+        ThemeManager.apply(primaryStage);
         primaryStage.setResizable(false);
         
         // Entrance Fade Animation

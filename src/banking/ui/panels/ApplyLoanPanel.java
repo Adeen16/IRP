@@ -48,7 +48,7 @@ public class ApplyLoanPanel extends JPanel {
 
         JLabel titleLabel = new JLabel("Apply for a Loan");
         titleLabel.setFont(UIStyle.TITLE_FONT);
-        titleLabel.setForeground(UIStyle.PRIMARY_COLOR);
+        titleLabel.setForeground(UIStyle.TEXT_COLOR);
         add(titleLabel, BorderLayout.NORTH);
 
         JPanel formPanel = new JPanel(new GridBagLayout());
@@ -125,16 +125,14 @@ public class ApplyLoanPanel extends JPanel {
         resultArea.setEditable(false);
         resultArea.setLineWrap(true);
         resultArea.setWrapStyleWord(true);
-        resultArea.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        resultArea.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(203, 213, 225), 1, true),
-            BorderFactory.createEmptyBorder(12, 12, 12, 12)
-        ));
+        UIStyle.styleTextArea(resultArea);
 
         JPanel center = new JPanel(new BorderLayout(20, 20));
         center.setBackground(UIStyle.BACKGROUND_COLOR);
         center.add(formPanel, BorderLayout.NORTH);
-        center.add(new JScrollPane(resultArea), BorderLayout.CENTER);
+        JScrollPane resultScrollPane = new JScrollPane(resultArea);
+        UIStyle.styleScrollPane(resultScrollPane);
+        center.add(resultScrollPane, BorderLayout.CENTER);
 
         add(center, BorderLayout.CENTER);
     }

@@ -1,5 +1,6 @@
 package banking.application;
 
+import banking.ui.ThemeManager;
 import banking.model.User;
 import banking.security.AuthSession;
 import banking.controllers.DashboardController;
@@ -18,13 +19,12 @@ public class NavigationManager {
             FXMLLoader loader = new FXMLLoader(NavigationManager.class.getResource("/banking/resources/fxml/LandingPage.fxml"));
             Parent root = loader.load();
             
-            String cssPath = NavigationManager.class.getResource("/banking/resources/css/global.css").toExternalForm();
-            root.getStylesheets().add(cssPath);
-
             Scene scene = new Scene(root, 900, 600);
+            ThemeManager.apply(scene);
             root.setOpacity(0);
             stage.setTitle("Secure Banking System");
             stage.setScene(scene);
+            ThemeManager.apply(stage);
             
             FadeTransition ft = new FadeTransition(Duration.millis(500), root);
             ft.setFromValue(0);
@@ -49,13 +49,12 @@ public class NavigationManager {
                 ((DashboardController) controller).setUser(user);
             }
             
-            String cssPath = NavigationManager.class.getResource("/banking/resources/css/global.css").toExternalForm();
-            root.getStylesheets().add(cssPath);
-
             Scene scene = new Scene(root, 900, 600);
+            ThemeManager.apply(scene);
             root.setOpacity(0);
             stage.setTitle(title);
             stage.setScene(scene);
+            ThemeManager.apply(stage);
             
             FadeTransition ft = new FadeTransition(Duration.millis(500), root);
             ft.setFromValue(0);

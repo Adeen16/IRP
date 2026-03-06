@@ -36,17 +36,18 @@ public class UserOverviewPanel extends JPanel implements Refreshable {
         setBackground(UIStyle.BACKGROUND_COLOR);
         setBorder(new EmptyBorder(30, 30, 30, 30));
 
-        ModernUIComponents.RoundedPanel accountCard =
-            new ModernUIComponents.RoundedPanel(20, Color.WHITE);
+        // --- Account Overview Card ---
+        ModernUIComponents.RoundedPanel accountCard = 
+            new ModernUIComponents.RoundedPanel(20, UIStyle.CARD_COLOR);
         accountCard.setLayout(new BorderLayout(20, 20));
         accountCard.setBorder(new EmptyBorder(30, 30, 30, 30));
 
         JPanel topRow = new JPanel(new BorderLayout());
-        topRow.setBackground(Color.WHITE);
-
+        topRow.setBackground(UIStyle.CARD_COLOR);
+        
         JPanel userInfoPanel = new JPanel(new GridLayout(2, 1, 0, 5));
-        userInfoPanel.setBackground(Color.WHITE);
-
+        userInfoPanel.setBackground(UIStyle.CARD_COLOR);
+        
         lblWelcome = new JLabel("Welcome back, " + currentUser.getUsername());
         lblWelcome.setFont(UIStyle.HEADER_FONT);
         lblWelcome.setForeground(UIStyle.TEXT_COLOR);
@@ -72,13 +73,12 @@ public class UserOverviewPanel extends JPanel implements Refreshable {
         accountCard.add(topRow, BorderLayout.NORTH);
 
         lblBalance = new JLabel("$0.00", SwingConstants.CENTER);
-        lblBalance.setFont(new Font("Segoe UI", Font.BOLD, 64));
+        lblBalance.setFont(new Font("Georgia", Font.BOLD, 64));
         lblBalance.setForeground(UIStyle.ACCENT_COLOR);
         accountCard.add(lblBalance, BorderLayout.CENTER);
 
         JPanel southPanel = new JPanel(new GridLayout(2, 1, 0, 5));
-        southPanel.setBackground(Color.WHITE);
-
+        southPanel.setBackground(UIStyle.CARD_COLOR);
         JLabel lblStatus = new JLabel("Available Balance", SwingConstants.CENTER);
         lblStatus.setFont(UIStyle.LABEL_FONT);
         lblStatus.setForeground(UIStyle.TEXT_LIGHT);
@@ -106,17 +106,20 @@ public class UserOverviewPanel extends JPanel implements Refreshable {
         actionsPanel.add(btnWithdraw);
 
         JButton btnTransfer = new JButton("\u21C4  SEND MONEY (TRANSFER)");
-        UIStyle.styleButton(btnTransfer, UIStyle.SECONDARY_COLOR);
+        UIStyle.styleSecondaryButton(btnTransfer);
+        btnTransfer.setPreferredSize(new Dimension(0, 60));
         btnTransfer.addActionListener(e -> openTransaction("TRANSFER"));
         actionsPanel.add(btnTransfer);
 
         JButton btnLoan = new JButton("\uD83D\uDCB5  REQUEST LOAN");
-        UIStyle.styleButton(btnLoan, UIStyle.PRIMARY_COLOR);
+        UIStyle.stylePrimaryButton(btnLoan);
+        btnLoan.setPreferredSize(new Dimension(0, 60));
         btnLoan.addActionListener(e -> requestLoan());
         actionsPanel.add(btnLoan);
 
         JButton btnSetPin = new JButton("\uD83D\uDD12  SET / CHANGE TRANSACTION PIN");
-        UIStyle.styleButton(btnSetPin, new Color(100, 100, 100));
+        UIStyle.styleSecondaryButton(btnSetPin);
+        btnSetPin.setPreferredSize(new Dimension(0, 60));
         btnSetPin.addActionListener(e -> setTransactionPin());
         actionsPanel.add(btnSetPin);
 
@@ -172,8 +175,13 @@ public class UserOverviewPanel extends JPanel implements Refreshable {
         JTextField incomeField = new JTextField();
         JComboBox<String> typeBox = new JComboBox<>(new String[]{"PERSONAL", "STUDENT", "HOME", "AUTO"});
         JComboBox<String> durationBox = new JComboBox<>(new String[]{"12", "24", "36", "48", "60"});
+        UIStyle.styleTextField(amountField);
+        UIStyle.styleTextField(incomeField);
+        UIStyle.styleComboBox(typeBox);
+        UIStyle.styleComboBox(durationBox);
 
         JPanel panel = new JPanel(new GridLayout(0, 1, 8, 8));
+        panel.setBackground(UIStyle.CARD_COLOR);
         panel.add(new JLabel("Loan Amount ($):"));
         panel.add(amountField);
         panel.add(new JLabel("Monthly Income ($):"));

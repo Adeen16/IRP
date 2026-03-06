@@ -48,14 +48,14 @@ public class ChatAssistantPanel extends JPanel implements Refreshable {
 
         // ===== Header =====
         JPanel header = new JPanel(new BorderLayout());
-        header.setBackground(Color.WHITE);
+        header.setBackground(UIStyle.CARD_COLOR);
         header.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(226, 232, 240)),
+            BorderFactory.createMatteBorder(0, 0, 1, 0, UIStyle.BORDER_COLOR),
             new EmptyBorder(15, 25, 15, 25)
         ));
 
         JPanel headerLeft = new JPanel(new GridLayout(2, 1, 0, 2));
-        headerLeft.setBackground(Color.WHITE);
+        headerLeft.setBackground(UIStyle.CARD_COLOR);
 
         JLabel titleLabel = new JLabel("AI Banking Assistant");
         titleLabel.setFont(UIStyle.HEADER_FONT);
@@ -68,7 +68,7 @@ public class ChatAssistantPanel extends JPanel implements Refreshable {
         headerLeft.add(statusLabel);
 
         JButton clearBtn = new JButton("Clear Chat");
-        UIStyle.styleButton(clearBtn, UIStyle.SECONDARY_COLOR);
+        UIStyle.styleSecondaryButton(clearBtn);
         clearBtn.addActionListener(e -> clearChat());
 
         JComboBox<String> modelSelector = new JComboBox<>(new String[]{"phi3", "llama3:8b"});
@@ -101,18 +101,19 @@ public class ChatAssistantPanel extends JPanel implements Refreshable {
             }
         };
         chatHistory.setEditable(false);
-        chatHistory.setBackground(new Color(248, 250, 252));
+        chatHistory.setBackground(UIStyle.CARD_COLOR);
+        chatHistory.setForeground(UIStyle.TEXT_COLOR);
         chatHistory.setMargin(new Insets(15, 15, 15, 15));
         chatDoc = chatHistory.getStyledDocument();
 
         // Define text styles
         userStyle = chatHistory.addStyle("user", null);
-        StyleConstants.setForeground(userStyle, new Color(30, 41, 59));
+        StyleConstants.setForeground(userStyle, UIStyle.TEXT_COLOR);
         StyleConstants.setFontFamily(userStyle, "Segoe UI");
         StyleConstants.setFontSize(userStyle, 14);
 
         assistantStyle = chatHistory.addStyle("assistant", null);
-        StyleConstants.setForeground(assistantStyle, new Color(30, 80, 160));
+        StyleConstants.setForeground(assistantStyle, UIStyle.ACCENT_HOVER);
         StyleConstants.setFontFamily(assistantStyle, "Segoe UI");
         StyleConstants.setFontSize(assistantStyle, 14);
 
@@ -128,11 +129,11 @@ public class ChatAssistantPanel extends JPanel implements Refreshable {
         StyleConstants.setBold(labelStyle, true);
 
         JScrollPane scrollPane = new JScrollPane(chatHistory);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        UIStyle.styleScrollPane(scrollPane);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        ModernUIComponents.RoundedPanel chatCard = new ModernUIComponents.RoundedPanel(15, Color.WHITE);
+        ModernUIComponents.RoundedPanel chatCard = new ModernUIComponents.RoundedPanel(15, UIStyle.CARD_COLOR);
         chatCard.setLayout(new BorderLayout());
         chatCard.setBorder(new EmptyBorder(10, 10, 10, 10));
         chatCard.add(scrollPane, BorderLayout.CENTER);
@@ -150,11 +151,7 @@ public class ChatAssistantPanel extends JPanel implements Refreshable {
         inputPanel.setBorder(new EmptyBorder(5, 25, 20, 25));
 
         userInput = new JTextField();
-        userInput.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        userInput.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(203, 213, 225), 1, true),
-            new EmptyBorder(12, 15, 12, 15)
-        ));
+        UIStyle.styleTextField(userInput);
         userInput.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -165,7 +162,7 @@ public class ChatAssistantPanel extends JPanel implements Refreshable {
         });
 
         sendButton = new JButton("Send");
-        UIStyle.styleButton(sendButton, UIStyle.ACCENT_COLOR);
+        UIStyle.stylePrimaryButton(sendButton);
         sendButton.setPreferredSize(new Dimension(100, 45));
         sendButton.addActionListener(e -> sendMessage());
 
@@ -231,7 +228,7 @@ public class ChatAssistantPanel extends JPanel implements Refreshable {
     private void appendUserMessage(String message) {
         try {
             Style userLabel = chatHistory.addStyle("userLabel", labelStyle);
-            StyleConstants.setForeground(userLabel, new Color(30, 41, 59));
+            StyleConstants.setForeground(userLabel, UIStyle.ACCENT_COLOR);
             chatDoc.insertString(chatDoc.getLength(), "You:\n", userLabel);
             chatDoc.insertString(chatDoc.getLength(), message + "\n\n", userStyle);
             scrollToBottom();
@@ -243,7 +240,7 @@ public class ChatAssistantPanel extends JPanel implements Refreshable {
     private void appendAssistantMessage(String message) {
         try {
             Style aiLabel = chatHistory.addStyle("aiLabel", labelStyle);
-            StyleConstants.setForeground(aiLabel, new Color(30, 80, 160));
+            StyleConstants.setForeground(aiLabel, UIStyle.ACCENT_HOVER);
             chatDoc.insertString(chatDoc.getLength(), "Assistant:\n", aiLabel);
             chatDoc.insertString(chatDoc.getLength(), message + "\n\n", assistantStyle);
             scrollToBottom();

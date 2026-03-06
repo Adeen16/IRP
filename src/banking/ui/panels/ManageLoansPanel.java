@@ -28,7 +28,7 @@ public class ManageLoansPanel extends JPanel {
         // Title
         JLabel titleLabel = new JLabel("Manage Pending Loans");
         titleLabel.setFont(UIStyle.TITLE_FONT);
-        titleLabel.setForeground(UIStyle.PRIMARY_COLOR);
+        titleLabel.setForeground(UIStyle.TEXT_COLOR);
         add(titleLabel, BorderLayout.NORTH);
 
         // Table setup
@@ -41,6 +41,7 @@ public class ManageLoansPanel extends JPanel {
         loanTable = new JTable(tableModel);
         UIStyle.styleTable(loanTable);
         JScrollPane scrollPane = new JScrollPane(loanTable);
+        UIStyle.styleScrollPane(scrollPane);
         add(scrollPane, BorderLayout.CENTER);
 
         // Action Buttons
@@ -54,7 +55,7 @@ public class ManageLoansPanel extends JPanel {
         UIStyle.styleDangerButton(rejectBtn);
         
         JButton refreshBtn = new JButton("Refresh");
-        UIStyle.stylePrimaryButton(refreshBtn);
+        UIStyle.styleSecondaryButton(refreshBtn);
 
         approveBtn.addActionListener(e -> processSelectedLoan(true));
         rejectBtn.addActionListener(e -> processSelectedLoan(false));

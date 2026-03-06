@@ -65,9 +65,9 @@ public class UserStatementPanel extends JPanel implements Refreshable {
         UIStyle.styleTable(transactionTable);
         
         JScrollPane scrollPane = new JScrollPane(transactionTable);
-        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(226, 232, 240)));
+        UIStyle.styleScrollPane(scrollPane);
 
-        ModernUIComponents.RoundedPanel tableCard = new ModernUIComponents.RoundedPanel(15, Color.WHITE);
+        ModernUIComponents.RoundedPanel tableCard = new ModernUIComponents.RoundedPanel(15, UIStyle.CARD_COLOR);
         tableCard.setLayout(new BorderLayout());
         tableCard.setBorder(new EmptyBorder(15, 15, 15, 15));
         tableCard.add(scrollPane, BorderLayout.CENTER);

@@ -36,12 +36,13 @@ public class UserFormDialog extends JDialog {
     }
 
     private void initializeUI() {
+        UIStyle.styleDialog(this);
         setSize(420, 500);
         setLocationRelativeTo(getOwner());
         setResizable(false);
 
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBackground(Color.WHITE);
+        panel.setBackground(UIStyle.CARD_COLOR);
         panel.setBorder(new EmptyBorder(25, 25, 25, 25));
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -103,14 +104,14 @@ public class UserFormDialog extends JDialog {
         gbc.gridy++;
         gbc.insets = new Insets(20, 5, 5, 5);
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        btnPanel.setBackground(Color.WHITE);
+        btnPanel.setBackground(UIStyle.CARD_COLOR);
 
         JButton btnCancel = new JButton("Cancel");
-        UIStyle.styleButton(btnCancel, UIStyle.SECONDARY_COLOR);
+        UIStyle.styleSecondaryButton(btnCancel);
         btnCancel.addActionListener(e -> dispose());
 
         JButton btnCreate = new JButton("Create User");
-        UIStyle.styleButton(btnCreate, UIStyle.ACCENT_COLOR);
+        UIStyle.stylePrimaryButton(btnCreate);
         btnCreate.addActionListener(e -> handleCreate());
 
         btnPanel.add(btnCancel);

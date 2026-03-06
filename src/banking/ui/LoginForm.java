@@ -35,7 +35,7 @@ public class LoginForm extends JFrame {
 
         // --- Left Panel (Branding) ---
         JPanel leftPanel = new JPanel(new GridBagLayout());
-        leftPanel.setBackground(new Color(15, 23, 42)); // Deep Navy Blue (Slate 900)
+        leftPanel.setBackground(UIStyle.PRIMARY_COLOR);
         
         GridBagConstraints gbcLeft = new GridBagConstraints();
         gbcLeft.gridx = 0;
@@ -45,27 +45,27 @@ public class LoginForm extends JFrame {
         // Logo / Icon (Text based modern emoji for 0 dependency)
         JLabel lblLogo = new JLabel("🏦");
         lblLogo.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 80));
-        lblLogo.setForeground(Color.WHITE);
+        lblLogo.setForeground(UIStyle.ACCENT_COLOR);
         leftPanel.add(lblLogo, gbcLeft);
 
         gbcLeft.gridy++;
         JLabel lblTitle = new JLabel("SECURE BANK");
         lblTitle.setFont(new Font("Inter", Font.BOLD, 38));
-        lblTitle.setForeground(Color.WHITE);
+        lblTitle.setForeground(UIStyle.TEXT_COLOR);
         leftPanel.add(lblTitle, gbcLeft);
         
         gbcLeft.gridy++;
         gbcLeft.insets = new Insets(5, 10, 10, 10);
         JLabel lblTagline = new JLabel("Enterprise Grade Financial Security");
         lblTagline.setFont(new Font("Inter", Font.PLAIN, 16));
-        lblTagline.setForeground(new Color(148, 163, 184)); // Slate 400
+        lblTagline.setForeground(UIStyle.TEXT_LIGHT);
         leftPanel.add(lblTagline, gbcLeft);
 
         mainPanel.add(leftPanel);
 
         // --- Right Panel (Form) ---
         JPanel rightPanel = new JPanel(new GridBagLayout());
-        rightPanel.setBackground(Color.WHITE);
+        rightPanel.setBackground(UIStyle.BACKGROUND_COLOR);
         
         GridBagConstraints gbcRight = new GridBagConstraints();
         gbcRight.gridx = 0;
@@ -78,7 +78,7 @@ public class LoginForm extends JFrame {
         gbcRight.insets = new Insets(10, 50, 40, 50);
         JLabel lblWelcome = new JLabel("Welcome Back", SwingConstants.LEFT);
         lblWelcome.setFont(new Font("Inter", Font.BOLD, 32));
-        lblWelcome.setForeground(new Color(30, 41, 59)); // Slate 800
+        lblWelcome.setForeground(UIStyle.TEXT_COLOR);
         rightPanel.add(lblWelcome, gbcRight);
 
         // Username Label
@@ -86,7 +86,7 @@ public class LoginForm extends JFrame {
         gbcRight.insets = new Insets(5, 50, 5, 50);
         JLabel lblUser = new JLabel("Customer Name (or Admin Username)");
         lblUser.setFont(new Font("Inter", Font.BOLD, 13));
-        lblUser.setForeground(new Color(100, 116, 139)); // Slate 500
+        lblUser.setForeground(UIStyle.TEXT_LIGHT);
         rightPanel.add(lblUser, gbcRight);
 
         // Username Input
@@ -94,12 +94,7 @@ public class LoginForm extends JFrame {
         gbcRight.insets = new Insets(0, 50, 20, 50);
         txtUsername = new JTextField(20);
         txtUsername.setPreferredSize(new Dimension(300, 45));
-        txtUsername.setFont(new Font("Inter", Font.PLAIN, 16));
-        // Soft rounded gray border
-        txtUsername.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(203, 213, 225), 1, true),
-            BorderFactory.createEmptyBorder(5, 15, 5, 15)
-        ));
+        UIStyle.styleTextField(txtUsername);
         rightPanel.add(txtUsername, gbcRight);
 
         // Password Label
@@ -107,7 +102,7 @@ public class LoginForm extends JFrame {
         gbcRight.insets = new Insets(5, 50, 5, 50);
         JLabel lblPass = new JLabel("Account Number (or Admin Password)");
         lblPass.setFont(new Font("Inter", Font.BOLD, 13));
-        lblPass.setForeground(new Color(100, 116, 139));
+        lblPass.setForeground(UIStyle.TEXT_LIGHT);
         rightPanel.add(lblPass, gbcRight);
 
         // Password Input
@@ -115,11 +110,7 @@ public class LoginForm extends JFrame {
         gbcRight.insets = new Insets(0, 50, 35, 50);
         txtPassword = new JPasswordField(20);
         txtPassword.setPreferredSize(new Dimension(300, 45));
-        txtPassword.setFont(new Font("Inter", Font.PLAIN, 16));
-        txtPassword.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(203, 213, 225), 1, true),
-            BorderFactory.createEmptyBorder(5, 15, 5, 15)
-        ));
+        UIStyle.stylePasswordField(txtPassword);
         rightPanel.add(txtPassword, gbcRight);
 
         // Login Button
@@ -127,12 +118,7 @@ public class LoginForm extends JFrame {
         gbcRight.insets = new Insets(10, 50, 10, 50);
         btnLogin = new JButton("Sign In");
         btnLogin.setPreferredSize(new Dimension(300, 50));
-        btnLogin.setFont(new Font("Inter", Font.BOLD, 16));
-        btnLogin.setForeground(Color.WHITE);
-        btnLogin.setBackground(new Color(37, 99, 235)); // Sleek Blue 600
-        btnLogin.setFocusPainted(false);
-        btnLogin.setBorder(new EmptyBorder(10, 10, 10, 10));
-        btnLogin.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        UIStyle.stylePrimaryButton(btnLogin);
         rightPanel.add(btnLogin, gbcRight);
 
         mainPanel.add(rightPanel);

@@ -30,6 +30,7 @@ public class AccountFormDialog extends JDialog {
     }
 
     private void initializeUI() {
+        UIStyle.styleDialog(this);
         setSize(480, 700);
         setLocationRelativeTo(getOwner());
         setResizable(true); // Allow resizing in case of smaller screens
@@ -37,7 +38,7 @@ public class AccountFormDialog extends JDialog {
 
         // --- Main Form Panel ---
         JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBackground(Color.WHITE);
+        formPanel.setBackground(UIStyle.CARD_COLOR);
         formPanel.setBorder(new EmptyBorder(25, 25, 25, 25));
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -82,7 +83,7 @@ public class AccountFormDialog extends JDialog {
         formPanel.add(createLabel("Account Type *"), gbc);
         gbc.gridy++;
         cmbAccountType = new JComboBox<>(new String[]{"SAVINGS", "CURRENT"});
-        cmbAccountType.setFont(UIStyle.SMALL_FONT);
+        UIStyle.styleComboBox(cmbAccountType);
         formPanel.add(cmbAccountType, gbc);
 
         // Transaction PIN
@@ -113,15 +114,15 @@ public class AccountFormDialog extends JDialog {
 
         // --- Button Panel ---
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
-        btnPanel.setBackground(new Color(248, 250, 252));
+        btnPanel.setBackground(UIStyle.CARD_COLOR);
         btnPanel.setBorder(new EmptyBorder(15, 25, 15, 25));
 
         JButton btnCancel = new JButton("Cancel");
-        UIStyle.styleButton(btnCancel, UIStyle.SECONDARY_COLOR);
+        UIStyle.styleSecondaryButton(btnCancel);
         btnCancel.addActionListener(e -> dispose());
 
         JButton btnCreate = new JButton("Create Account");
-        UIStyle.styleButton(btnCreate, UIStyle.ACCENT_COLOR);
+        UIStyle.stylePrimaryButton(btnCreate);
         btnCreate.addActionListener(e -> handleCreate());
 
         btnPanel.add(btnCancel);
@@ -129,6 +130,7 @@ public class AccountFormDialog extends JDialog {
 
         add(scrollPane, BorderLayout.CENTER);
         add(btnPanel, BorderLayout.SOUTH);
+        UIStyle.styleScrollPane(scrollPane);
     }
 
     private JLabel createLabel(String text) {

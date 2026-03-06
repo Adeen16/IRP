@@ -29,11 +29,13 @@ public class OverviewPanel extends JPanel implements Refreshable {
     private void initializeUI() {
         setLayout(new BorderLayout(30, 30));
         setBackground(UIStyle.BACKGROUND_COLOR);
+        setOpaque(true);
         setBorder(new EmptyBorder(30, 30, 30, 30));
 
         // --- Stats Panel ---
         JPanel statsPanel = new JPanel(new GridLayout(1, 3, 25, 0));
         statsPanel.setBackground(UIStyle.BACKGROUND_COLOR);
+        statsPanel.setOpaque(true);
 
         JPanel card1 = UIStyle.createStatCard("TOTAL ASSETS", "$0.00", UIStyle.ACCENT_COLOR);
         JPanel card2 = UIStyle.createStatCard("ACTIVE ACCOUNTS", "0", UIStyle.SUCCESS_COLOR);
@@ -52,12 +54,14 @@ public class OverviewPanel extends JPanel implements Refreshable {
 
         // --- Analytics Chart ---
         ModernUIComponents.RoundedPanel chartCard =
-                new ModernUIComponents.RoundedPanel(20, Color.WHITE);
+                new ModernUIComponents.RoundedPanel(20, UIStyle.CARD_COLOR);
         chartCard.setLayout(new BorderLayout(20, 20));
         chartCard.setBorder(new EmptyBorder(25, 25, 25, 25));
+        chartCard.setOpaque(false);
 
         JLabel lblChartTitle = new JLabel("Transaction Trends");
         lblChartTitle.setFont(UIStyle.HEADER_FONT);
+        lblChartTitle.setForeground(UIStyle.TEXT_COLOR);
         chartCard.add(lblChartTitle, BorderLayout.NORTH);
 
         try {
@@ -77,17 +81,26 @@ public class OverviewPanel extends JPanel implements Refreshable {
                     false, true, false
             );
 
-            lineChart.setBackgroundPaint(Color.WHITE);
+            lineChart.setBackgroundPaint(UIStyle.CARD_COLOR);
             org.jfree.chart.plot.CategoryPlot plot = lineChart.getCategoryPlot();
-            plot.setBackgroundPaint(Color.WHITE);
+            plot.setBackgroundPaint(UIStyle.CARD_COLOR);
             plot.setOutlineVisible(false);
-            plot.setRangeGridlinePaint(new Color(226, 232, 240));
+            plot.setRangeGridlinePaint(UIStyle.BORDER_COLOR);
+            plot.getDomainAxis().setTickLabelPaint(UIStyle.TEXT_LIGHT);
+            plot.getDomainAxis().setLabelPaint(UIStyle.TEXT_COLOR);
+            plot.getRangeAxis().setTickLabelPaint(UIStyle.TEXT_LIGHT);
+            plot.getRangeAxis().setLabelPaint(UIStyle.TEXT_COLOR);
+            plot.getRenderer().setSeriesPaint(0, UIStyle.ACCENT_COLOR);
 
             org.jfree.chart.ChartPanel chartPanel = new org.jfree.chart.ChartPanel(lineChart);
-            chartPanel.setBackground(Color.WHITE);
+            chartPanel.setBackground(UIStyle.CARD_COLOR);
+            chartPanel.setOpaque(true);
+            chartPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
             chartCard.add(chartPanel, BorderLayout.CENTER);
         } catch (Exception e) {
-            chartCard.add(new JLabel("Chart unavailable"), BorderLayout.CENTER);
+            JLabel fallback = new JLabel("Chart unavailable");
+            fallback.setForeground(UIStyle.TEXT_LIGHT);
+            chartCard.add(fallback, BorderLayout.CENTER);
         }
 
         add(chartCard, BorderLayout.CENTER);

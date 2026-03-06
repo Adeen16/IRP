@@ -37,7 +37,7 @@ public class UserSecurityPanel extends JPanel implements Refreshable {
         title.setForeground(UIStyle.TEXT_COLOR);
         add(title, BorderLayout.NORTH);
 
-        ModernUIComponents.RoundedPanel card = new ModernUIComponents.RoundedPanel(20, Color.WHITE);
+        ModernUIComponents.RoundedPanel card = new ModernUIComponents.RoundedPanel(20, UIStyle.CARD_COLOR);
         card.setLayout(new GridBagLayout());
         card.setBorder(new EmptyBorder(40, 40, 40, 40));
 
@@ -50,23 +50,30 @@ public class UserSecurityPanel extends JPanel implements Refreshable {
         gbc.gridy = 0;
         card.add(new JLabel("Change Password"), gbc);
         ((JLabel)card.getComponent(0)).setFont(UIStyle.HEADER_FONT);
+        ((JLabel)card.getComponent(0)).setForeground(UIStyle.TEXT_COLOR);
 
         gbc.gridy++;
-        card.add(new JLabel("Current Password"), gbc);
+        JLabel currentLabel = new JLabel("Current Password");
+        currentLabel.setForeground(UIStyle.TEXT_LIGHT);
+        card.add(currentLabel, gbc);
         gbc.gridy++;
         txtOldPassword = new JPasswordField();
         UIStyle.stylePasswordField(txtOldPassword);
         card.add(txtOldPassword, gbc);
 
         gbc.gridy++;
-        card.add(new JLabel("New Password (min 8 chars, upper/lower/number)"), gbc);
+        JLabel newLabel = new JLabel("New Password (min 8 chars, upper/lower/number)");
+        newLabel.setForeground(UIStyle.TEXT_LIGHT);
+        card.add(newLabel, gbc);
         gbc.gridy++;
         txtNewPassword = new JPasswordField();
         UIStyle.stylePasswordField(txtNewPassword);
         card.add(txtNewPassword, gbc);
 
         gbc.gridy++;
-        card.add(new JLabel("Confirm New Password"), gbc);
+        JLabel confirmLabel = new JLabel("Confirm New Password");
+        confirmLabel.setForeground(UIStyle.TEXT_LIGHT);
+        card.add(confirmLabel, gbc);
         gbc.gridy++;
         txtConfirmPassword = new JPasswordField();
         UIStyle.stylePasswordField(txtConfirmPassword);
