@@ -26,7 +26,6 @@ public class LoginController implements Initializable {
     @FXML private TextField txtUsername;
     @FXML private PasswordField txtPassword;
     @FXML private Button btnLogin;
-    @FXML private Button btnCreateAccount;
     @FXML private Label lblError;
 
     private AuthService authService;
@@ -38,14 +37,13 @@ public class LoginController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // Entrance slide animation for the card
-        TranslateTransition tt = new TranslateTransition(Duration.millis(900), loginCard);
-        tt.setFromY(50);
+        TranslateTransition tt = new TranslateTransition(Duration.millis(600), loginCard);
+        tt.setFromY(30);
         tt.setToY(0);
         tt.play();
         
-        // Button Hover Animations
+        // Button Hover Animation
         addScaleHover(btnLogin);
-        addScaleHover(btnCreateAccount);
     }
     
     private void addScaleHover(Button button) {

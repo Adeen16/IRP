@@ -1,26 +1,104 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
-<VBox styleClass="right-panel" alignment="CENTER" spacing="20" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="banking.controllers.DashboardController">
-    <VBox fx:id="dashboardCard" styleClass="glass-card" alignment="CENTER" spacing="20" maxWidth="500">
+<VBox styleClass="right-panel" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="banking.controllers.DashboardController">
+    <!-- Compact Header -->
+    <HBox styleClass="header-bar" alignment="CENTER_LEFT" spacing="20">
         <padding>
-            <Insets top="40" right="40" bottom="40" left="40"/>
+            <Insets top="16" right="24" bottom="16" left="24"/>
         </padding>
-        <Label text="🔐 Admin Dashboard (JavaFX Shell)" styleClass="card-header"/>
-        <Label fx:id="lblWelcome" text="Welcome, Admin!" styleClass="input-label" style="-fx-font-size: 18px;"/>
-        <Label text="This JavaFX dashboard shell is ready for Phase 6 of the migration." styleClass="brand-tagline" wrapText="true" textAlignment="CENTER"/>
-        
-        <Region prefHeight="20"/>
-        
-        <HBox spacing="15" alignment="CENTER">
-            <Button text="Launch Legacy Swing Dashboard" styleClass="btn-primary" onAction="#launchLegacyDashboard"/>
-            <Button text="Logout" styleClass="btn-secondary btn-danger" onAction="#handleLogout"/>
-        </HBox>
-    </VBox>
+        <Label text="SECURE BANK - ADMIN" styleClass="brand-title" fx:id="lblBrand"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="lblWelcome" text="Admin" styleClass="text-muted"/>
+        <Button text="Logout" styleClass="btn-danger" onAction="#handleLogout"/>
+    </HBox>
+
+    <!-- Main Content -->
+    <ScrollPane fitToWidth="true" styleClass="content-scroll">
+        <VBox spacing="24">
+            <padding>
+                <Insets top="24" right="24" bottom="24" left="24"/>
+            </padding>
+
+            <!-- Top Row: Bank Overview Stats -->
+            <HBox spacing="16">
+                <VBox styleClass="metric-card" HBox.hgrow="ALWAYS" spacing="4">
+                    <Label text="Total Assets" styleClass="metric-label"/>
+                    <Label text="$0" styleClass="metric-value text-gold" fx:id="lblTotalAssets"/>
+                </VBox>
+                <VBox styleClass="metric-card" HBox.hgrow="ALWAYS" spacing="4">
+                    <Label text="Total Accounts" styleClass="metric-label"/>
+                    <Label text="0" styleClass="metric-value" fx:id="lblTotalAccounts"/>
+                </VBox>
+                <VBox styleClass="metric-card" HBox.hgrow="ALWAYS" spacing="4">
+                    <Label text="Total Customers" styleClass="metric-label"/>
+                    <Label text="0" styleClass="metric-value" fx:id="lblTotalCustomers"/>
+                </VBox>
+                <VBox styleClass="metric-card" HBox.hgrow="ALWAYS" spacing="4">
+                    <Label text="Pending Loans" styleClass="metric-label"/>
+                    <Label text="0" styleClass="metric-value text-danger" fx:id="lblPendingLoans"/>
+                </VBox>
+            </HBox>
+
+            <!-- Charts Row -->
+            <HBox spacing="16">
+                <VBox styleClass="metric-card" HBox.hgrow="ALWAYS" spacing="8">
+                    <Label text="Transaction Volume" styleClass="card-header"/>
+                    <BarChart fx:id="chartTransactions" prefHeight="200">
+                        <xAxis><CategoryAxis/></xAxis>
+                        <yAxis><NumberAxis/></yAxis>
+                    </BarChart>
+                </VBox>
+                <VBox styleClass="metric-card" prefWidth="280" spacing="8">
+                    <Label text="Account Types" styleClass="card-header"/>
+                    <PieChart fx:id="chartAccountTypes" prefHeight="200"/>
+                </VBox>
+            </HBox>
+
+            <!-- Recent Transactions -->
+            <VBox styleClass="metric-card" spacing="12">
+                <HBox>
+                    <Label text="Recent Transactions" styleClass="card-header"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <TextField fx:id="txtSearch" promptText="Search..." styleClass="input-field" prefWidth="200"/>
+                    <Button text="Search" styleClass="btn-secondary" onAction="#handleSearch"/>
+                </HBox>
+                <TableView fx:id="tblTransactions" styleClass="table-view" prefHeight="250">
+                    <columns>
+                        <TableColumn text="ID" prefWidth="60"/>
+                        <TableColumn text="Account" prefWidth="140"/>
+                        <TableColumn text="Type" prefWidth="100"/>
+                        <TableColumn text="Amount" prefWidth="120"/>
+                        <TableColumn text="Date" prefWidth="160"/>
+                    </columns>
+                </TableView>
+            </VBox>
+
+            <!-- Quick Actions -->
+            <HBox spacing="12">
+                <Button text="Manage Customers" styleClass="btn-primary" onAction="#handleManageCustomers"/>
+                <Button text="Manage Accounts" styleClass="btn-secondary" onAction="#handleManageAccounts"/>
+                <Button text="Manage Loans" styleClass="btn-secondary" onAction="#handleManageLoans"/>
+                <Button text="Transaction Reports" styleClass="btn-secondary" onAction="#handleTransactionReports"/>
+            </HBox>
+        </VBox>
+    </ScrollPane>
 </VBox>

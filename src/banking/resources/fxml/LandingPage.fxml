@@ -11,29 +11,28 @@
 <?import javafx.scene.layout.Region?>
 
 <HBox styleClass="main-container" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="banking.controllers.LoginController">
-    <!-- Left Panel: Branding / Hero Content -->
-    <VBox fx:id="leftPanel" styleClass="left-panel" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="15">
-        <Label text="🏦" styleClass="brand-icon"/>
+    <!-- Left Panel: Minimal Branding -->
+    <VBox fx:id="leftPanel" styleClass="left-panel" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="12">
         <Label text="SECURE BANK" styleClass="brand-title"/>
-        <Label text="Enterprise Grade Financial Security" styleClass="brand-tagline"/>
+        <Label text="Modern Banking. Secure by Design." styleClass="brand-tagline"/>
+        <Label text="Secure digital banking workspace." styleClass="brand-subtitle"/>
     </VBox>
 
-    <!-- Right Panel: Login Form / Floating Card Container -->
+    <!-- Right Panel: Login Form -->
     <StackPane fx:id="rightPanel" styleClass="right-panel" HBox.hgrow="ALWAYS">
-        <!-- The Floating Glass Card -->
-        <VBox fx:id="loginCard" styleClass="glass-card" alignment="CENTER_LEFT" spacing="15" maxWidth="380" maxHeight="450">
+        <VBox fx:id="loginCard" styleClass="glass-card" alignment="CENTER_LEFT" spacing="18" maxWidth="340" maxHeight="380">
             <padding>
-                <Insets top="40" right="40" bottom="40" left="40"/>
+                <Insets top="32" right="32" bottom="32" left="32"/>
             </padding>
             
             <Label text="Welcome Back" styleClass="card-header"/>
             
-            <VBox spacing="5" maxWidth="Infinity">
+            <VBox spacing="4" maxWidth="Infinity">
                 <Label text="Username" styleClass="input-label"/>
                 <TextField fx:id="txtUsername" promptText="Enter username" styleClass="input-field" onAction="#handleLogin"/>
             </VBox>
             
-            <VBox spacing="5" maxWidth="Infinity">
+            <VBox spacing="4" maxWidth="Infinity">
                 <Label text="Password" styleClass="input-label"/>
                 <PasswordField fx:id="txtPassword" promptText="Enter password" styleClass="input-field" onAction="#handleLogin"/>
             </VBox>
@@ -42,9 +41,6 @@
             
             <Button fx:id="btnLogin" text="Sign In" styleClass="btn-primary" maxWidth="Infinity" onAction="#handleLogin"/>
             
-            <Button fx:id="btnCreateAccount" text="Create Account" styleClass="btn-secondary" maxWidth="Infinity"/>
-            
-            <!-- Error Label (Hidden initially) -->
             <Label fx:id="lblError" styleClass="error-label" visible="false" wrapText="true" maxWidth="Infinity" alignment="CENTER"/>
         </VBox>
     </StackPane>
