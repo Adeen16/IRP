@@ -1,6 +1,12 @@
 /* Luxury Black + Gold Theme */
 
 .root {
+    -card-dark-top: #111111;
+    -card-dark-bottom: #0a0a0a;
+    -card-gold: #C9A227;
+    -card-gold-border: rgba(201, 162, 39, 0.25);
+    -card-gold-glow: rgba(201, 162, 39, 0.28);
+    -card-inner-shadow: rgba(0, 0, 0, 0.6);
     -fx-background-color: radial-gradient(center 50% 35%, radius 90%, #0B0B0F 0%, #07080D 55%, #020617 100%);
     -fx-font-family: "Georgia", "Segoe UI", serif;
 }
@@ -36,19 +42,27 @@
 
 /* Cards / Panels */
 .glass-card {
-    -fx-background-color: rgba(20, 20, 24, 0.88);
+    -fx-background-color: linear-gradient(to bottom, -card-dark-top, -card-dark-bottom);
     -fx-background-radius: 16px;
-    -fx-border-color: rgba(255, 255, 255, 0.06);
+    -fx-border-color: -card-gold-border;
     -fx-border-width: 1px;
     -fx-border-radius: 16px;
     -fx-background-insets: 0;
     -fx-border-insets: 0;
     -fx-padding: 20px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.68), 32, 0.28, 0, 8);
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+    -fx-effect: dropshadow(gaussian, -card-gold-glow, 30, 0.15, 0, 0),
+                innershadow(gaussian, -card-inner-shadow, 10, 0.2, 0, 0),
+                dropshadow(gaussian, rgba(0, 0, 0, 0.78), 24, 0.3, 0, 10);
 }
 
 .glass-card:hover {
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.74), 38, 0.32, 0, 10);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+    -fx-effect: dropshadow(gaussian, rgba(201, 162, 39, 0.36), 45, 0.18, 0, 0),
+                innershadow(gaussian, -card-inner-shadow, 10, 0.22, 0, 0),
+                dropshadow(gaussian, rgba(0, 0, 0, 0.82), 28, 0.34, 0, 12);
 }
 
 .content-panel,
@@ -57,15 +71,19 @@
 .panel-card,
 .dashboard-content,
 .dashboard-wrapper {
-    -fx-background-color: rgba(20, 20, 24, 0.88);
+    -fx-background-color: linear-gradient(to bottom, -card-dark-top, -card-dark-bottom);
     -fx-background-radius: 16px;
-    -fx-border-color: rgba(255, 255, 255, 0.06);
+    -fx-border-color: -card-gold-border;
     -fx-border-width: 1px;
     -fx-border-radius: 16px;
     -fx-background-insets: 0;
     -fx-border-insets: 0;
     -fx-padding: 20px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.68), 32, 0.28, 0, 8);
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+    -fx-effect: dropshadow(gaussian, -card-gold-glow, 30, 0.15, 0, 0),
+                innershadow(gaussian, -card-inner-shadow, 10, 0.2, 0, 0),
+                dropshadow(gaussian, rgba(0, 0, 0, 0.78), 24, 0.3, 0, 10);
 }
 
 .content-panel:hover,
@@ -74,11 +92,15 @@
 .panel-card:hover,
 .dashboard-content:hover,
 .dashboard-wrapper:hover {
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.74), 38, 0.32, 0, 10);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+    -fx-effect: dropshadow(gaussian, rgba(201, 162, 39, 0.36), 45, 0.18, 0, 0),
+                innershadow(gaussian, -card-inner-shadow, 10, 0.22, 0, 0),
+                dropshadow(gaussian, rgba(0, 0, 0, 0.82), 28, 0.34, 0, 12);
 }
 
 .card-header {
-    -fx-font-size: 31px;
+    -fx-font-size: 22px;
     -fx-font-weight: bold;
     -fx-text-fill: #E5E7EB;
     -fx-padding: 0 0 18 0;
@@ -87,7 +109,7 @@
 .title,
 .titled-pane > .title,
 .dialog-pane .header-panel .label {
-    -fx-font-size: 24px;
+    -fx-font-size: 22px;
     -fx-font-weight: bold;
     -fx-text-fill: #E5E7EB;
 }
@@ -187,7 +209,7 @@
 
 .btn-primary {
     -fx-text-fill: #0B0B0F;
-    -fx-background-color: #C9A227;
+    -fx-background-color: linear-gradient(#E5C76B, #C9A227);
     -fx-border-color: transparent;
 }
 
@@ -258,7 +280,7 @@
 
 .sidebar-item:hover,
 .nav-button:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.04);
+    -fx-background-color: rgba(255, 255, 255, 0.05);
 }
 
 .sidebar-item.active,
@@ -368,6 +390,7 @@
 .default-color0.chart-bar,
 .default-color0.chart-pie {
     -fx-stroke: #C9A227;
+    -fx-stroke-width: 2px;
     -fx-background-color: #C9A227;
     -fx-pie-color: #C9A227;
     -fx-effect: dropshadow(gaussian, rgba(201, 162, 39, 0.35), 10, 0.4, 0, 0);

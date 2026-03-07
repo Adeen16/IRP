@@ -6,7 +6,7 @@
 
 **Architecture:** We will create the `loans` table, build the Java Model/DAO/Service layer, and finally wire up the Swing UI panels to these services.
 
-**Tech Stack:** Java SE, Swing, FlatLaf, MySQL, JDBC.
+**Tech Stack:** Java SE, Swing/JavaFX, FlatLaf, SQLite, JDBC.
 
 ---
 

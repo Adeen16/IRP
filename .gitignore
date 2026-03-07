@@ -3,7 +3,6 @@
 bin/
 
 # Database and Data
-mysql_data/
 database/data/
 *.log
 

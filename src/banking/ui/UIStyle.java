@@ -1,5 +1,6 @@
 package banking.ui;
 
+import banking.ui.components.ModernUIComponents;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -11,10 +12,15 @@ import java.awt.*;
 public class UIStyle {
     public static final Color BACKGROUND_COLOR = new Color(11, 11, 15);
     public static final Color CARD_COLOR = new Color(20, 20, 24);
+    public static final Color CARD_GRADIENT_TOP = new Color(17, 17, 17);
+    public static final Color CARD_GRADIENT_BOTTOM = new Color(10, 10, 10);
     public static final Color PRIMARY_COLOR = new Color(9, 9, 11);
     public static final Color SECONDARY_COLOR = new Color(24, 24, 27);
     public static final Color ACCENT_COLOR = new Color(201, 162, 39);
     public static final Color ACCENT_HOVER = new Color(229, 199, 107);
+    public static final Color GOLD_GLOW_COLOR = new Color(201, 162, 39);
+    public static final Color CARD_GOLD_BORDER = new Color(201, 162, 39, 64);
+    public static final Color CARD_INNER_SHADOW = new Color(0, 0, 0, 153);
     public static final Color TEXT_COLOR = new Color(229, 231, 235);
     public static final Color TEXT_LIGHT = new Color(156, 163, 175);
     public static final Color SUCCESS_COLOR = new Color(16, 185, 129);
@@ -168,7 +174,7 @@ public class UIStyle {
         scrollPane.getViewport().setBackground(CARD_COLOR);
         scrollPane.setBorder(BorderFactory.createCompoundBorder(
             new MatteBorder(0, 0, 6, 0, new Color(0, 0, 0, 70)),
-            BorderFactory.createLineBorder(BORDER_COLOR)
+            BorderFactory.createLineBorder(CARD_GOLD_BORDER)
         ));
     }
 
@@ -188,15 +194,10 @@ public class UIStyle {
     }
 
     public static JPanel createCard() {
-        JPanel card = new JPanel();
+        JPanel card = new ModernUIComponents.RoundedPanel(20, CARD_COLOR);
         card.setBackground(CARD_COLOR);
-        card.setBorder(BorderFactory.createCompoundBorder(
-            new MatteBorder(0, 0, 6, 0, new Color(0, 0, 0, 70)),
-            BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(BORDER_COLOR, 1, true),
-                new EmptyBorder(18, 18, 18, 18)
-            )
-        ));
+        card.setBorder(new EmptyBorder(18, 18, 18, 18));
+        card.setOpaque(false);
         return card;
     }
 
