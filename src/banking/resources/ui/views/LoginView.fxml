@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:controller="banking.ui.controllers.LoginViewController"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            styleClass="app-root">
+    <center>
+        <HBox styleClass="login-shell">
+            <VBox prefWidth="540.0" styleClass="login-brand-panel" spacing="18.0">
+                <padding>
+                    <Insets top="64.0" right="56.0" bottom="64.0" left="56.0" />
+                </padding>
+                <Label text="SECURE BANK" styleClass="brand-kicker" />
+                <Label text="A dark fintech workspace for secure banking operations." styleClass="hero-title" wrapText="true" />
+                <Label text="Manage balances, transfer funds, track statements, approve loans, and access the local AI assistant without changing the trusted backend." styleClass="hero-copy" wrapText="true" />
+                <VBox spacing="14.0">
+                    <HBox styleClass="feature-chip-row" spacing="12.0">
+                        <Label text="BCrypt Security" styleClass="feature-chip" />
+                        <Label text="SQLite Persistence" styleClass="feature-chip" />
+                    </HBox>
+                    <HBox styleClass="feature-chip-row" spacing="12.0">
+                        <Label text="Loan Approvals" styleClass="feature-chip" />
+                        <Label text="Local AI Assistant" styleClass="feature-chip" />
+                    </HBox>
+                </VBox>
+                <Region VBox.vgrow="ALWAYS" />
+                <VBox spacing="8.0" styleClass="glass-card">
+                    <Label text="Two login paths" styleClass="section-title" />
+                    <Label text="Use customer name + account number for customer access, or username + password for standard user/admin sign-in." styleClass="muted-text" wrapText="true" />
+                </VBox>
+            </VBox>
+            <StackPane HBox.hgrow="ALWAYS" styleClass="login-form-panel">
+                <VBox maxWidth="430.0" spacing="18.0" styleClass="auth-card">
+                    <padding>
+                        <Insets top="36.0" right="36.0" bottom="36.0" left="36.0" />
+                    </padding>
+                    <Label text="Welcome back" styleClass="section-title" />
+                    <Label text="Enter customer credentials or admin access details to continue." styleClass="muted-text" wrapText="true" />
+                    <VBox spacing="10.0">
+                        <Label text="Customer name or username" styleClass="field-label" />
+                        <TextField fx:id="txtUsername" promptText="e.g. Adeel or admin" styleClass="fintech-field" onAction="#handleLogin" />
+                    </VBox>
+                    <VBox spacing="10.0">
+                        <Label text="Account number or password" styleClass="field-label" />
+                        <PasswordField fx:id="txtPassword" promptText="Enter secure credential" styleClass="fintech-field" onAction="#handleLogin" />
+                    </VBox>
+                    <Label fx:id="lblError" styleClass="error-text" visible="false" managed="true" wrapText="true" />
+                    <Button fx:id="btnLogin" text="Enter Secure Bank" styleClass="primary-button" maxWidth="1.7976931348623157E308" onAction="#handleLogin" />
+                    <HBox spacing="10.0" alignment="CENTER_LEFT">
+                        <Label text="System status" styleClass="field-label" />
+                        <Label text="Backend unchanged - UI refreshed" styleClass="success-text" />
+                    </HBox>
+                </VBox>
+            </StackPane>
+        </HBox>
+    </center>
+</BorderPane>

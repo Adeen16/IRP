@@ -1,0 +1,320 @@
+.root {
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+.app-root {
+    -fx-background-color: #0f0f0f;
+}
+
+.login-shell {
+    -fx-background-color: linear-gradient(to bottom right, #111111, #181818 50%, #111111 100%);
+}
+
+.login-brand-panel {
+    -fx-background-color: radial-gradient(radius 120%, #222018 0%, #141414 45%, #0f0f0f 100%);
+    -fx-border-color: rgba(212, 175, 55, 0.18);
+    -fx-border-width: 0 1 0 0;
+}
+
+.login-form-panel {
+    -fx-background-color: linear-gradient(to bottom, #0f0f0f, #151515);
+}
+
+.sidebar {
+    -fx-background-color: linear-gradient(to bottom, #161616, #111111);
+    -fx-border-color: rgba(212, 175, 55, 0.14);
+    -fx-border-width: 0 1 0 0;
+}
+
+.header-bar {
+    -fx-background-color: #151515;
+    -fx-border-color: rgba(255, 255, 255, 0.06);
+    -fx-border-width: 0 0 1 0;
+}
+
+.shell-scroll,
+.shell-scroll > .viewport,
+.chat-scroll,
+.chat-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.brand-kicker {
+    -fx-text-fill: #d4af37;
+    -fx-font-size: 16px;
+    -fx-font-weight: 700;
+    -fx-letter-spacing: 1.4px;
+}
+
+.sidebar-subtitle,
+.muted-text {
+    -fx-text-fill: #a7a7a7;
+    -fx-font-size: 13px;
+}
+
+.page-title {
+    -fx-text-fill: #f5f5f5;
+    -fx-font-size: 28px;
+    -fx-font-weight: 700;
+}
+
+.hero-title {
+    -fx-text-fill: #f5f5f5;
+    -fx-font-size: 38px;
+    -fx-font-weight: 700;
+}
+
+.hero-copy,
+.body-strong {
+    -fx-text-fill: #f5f5f5;
+    -fx-font-size: 14px;
+}
+
+.section-title {
+    -fx-text-fill: #f5f5f5;
+    -fx-font-size: 20px;
+    -fx-font-weight: 700;
+}
+
+.field-label {
+    -fx-text-fill: #d4af37;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+}
+
+.glass-card,
+.auth-card,
+.dialog-shell {
+    -fx-background-color: rgba(26, 26, 26, 0.96);
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-border-color: rgba(212, 175, 55, 0.18);
+    -fx-border-width: 1px;
+    -fx-padding: 20px;
+}
+
+.auth-card {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.34), 28, 0.22, 0, 14);
+}
+
+.alert-card {
+    -fx-background-color: linear-gradient(to bottom right, rgba(212, 175, 55, 0.15), rgba(80, 61, 10, 0.42));
+    -fx-background-radius: 20px;
+    -fx-border-color: rgba(212, 175, 55, 0.28);
+    -fx-border-radius: 20px;
+    -fx-padding: 20px;
+}
+
+.feature-chip {
+    -fx-background-color: rgba(212, 175, 55, 0.12);
+    -fx-background-radius: 999px;
+    -fx-border-color: rgba(212, 175, 55, 0.24);
+    -fx-border-radius: 999px;
+    -fx-padding: 10 14 10 14;
+    -fx-text-fill: #f5f5f5;
+    -fx-font-size: 12px;
+}
+
+.metric-value {
+    -fx-text-fill: #f5f5f5;
+    -fx-font-size: 30px;
+    -fx-font-weight: 700;
+}
+
+.gold-text {
+    -fx-text-fill: #d4af37;
+}
+
+.fintech-field,
+.fintech-combo,
+.fintech-textarea {
+    -fx-background-color: #111111;
+    -fx-background-radius: 14px;
+    -fx-border-color: rgba(255, 255, 255, 0.08);
+    -fx-border-radius: 14px;
+    -fx-border-width: 1px;
+    -fx-text-fill: #f5f5f5;
+    -fx-prompt-text-fill: #737373;
+    -fx-padding: 12 14 12 14;
+}
+
+.fintech-combo .list-cell {
+    -fx-text-fill: #f5f5f5;
+    -fx-background-color: #111111;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: #171717;
+    -fx-border-color: rgba(212, 175, 55, 0.18);
+}
+
+.primary-button,
+.secondary-button,
+.ghost-button,
+.danger-button,
+.sidebar-button {
+    -fx-background-radius: 14px;
+    -fx-border-radius: 14px;
+    -fx-padding: 12 18 12 18;
+    -fx-cursor: hand;
+    -fx-font-weight: 700;
+}
+
+.primary-button {
+    -fx-background-color: linear-gradient(to right, #cba631, #d4af37);
+    -fx-text-fill: #111111;
+}
+
+.secondary-button {
+    -fx-background-color: #232323;
+    -fx-border-color: rgba(212, 175, 55, 0.18);
+    -fx-text-fill: #f5f5f5;
+}
+
+.ghost-button {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(255, 255, 255, 0.12);
+    -fx-text-fill: #f5f5f5;
+}
+
+.danger-button {
+    -fx-background-color: #652222;
+    -fx-text-fill: #f5f5f5;
+}
+
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: #d0d0d0;
+    -fx-alignment: center-left;
+}
+
+.sidebar-button-active {
+    -fx-background-color: rgba(212, 175, 55, 0.16);
+    -fx-border-color: rgba(212, 175, 55, 0.32);
+    -fx-text-fill: #f5f5f5;
+}
+
+.fintech-table {
+    -fx-background-color: transparent;
+    -fx-table-cell-border-color: rgba(255, 255, 255, 0.04);
+}
+
+.fintech-table .column-header-background {
+    -fx-background-color: #1e1e1e;
+    -fx-background-radius: 12px 12px 0 0;
+}
+
+.fintech-table .column-header,
+.fintech-table .filler {
+    -fx-background-color: transparent;
+    -fx-size: 40px;
+}
+
+.fintech-table .column-header .label {
+    -fx-text-fill: #d4af37;
+    -fx-font-weight: 700;
+}
+
+.fintech-table .table-row-cell {
+    -fx-background-color: #171717;
+    -fx-text-fill: #f5f5f5;
+}
+
+.fintech-table .table-row-cell:odd {
+    -fx-background-color: #1b1b1b;
+}
+
+.fintech-table .table-row-cell:selected {
+    -fx-background-color: rgba(212, 175, 55, 0.22);
+}
+
+.fintech-table .table-cell {
+    -fx-text-fill: #f5f5f5;
+    -fx-border-color: transparent;
+}
+
+.chart,
+.chart-plot-background,
+.chart-content,
+.chart-legend {
+    -fx-background-color: transparent;
+}
+
+.axis-label,
+.chart-legend-item,
+.chart-pie-label,
+.default-color0.chart-pie-label,
+.default-color1.chart-pie-label,
+.default-color2.chart-pie-label,
+.default-color3.chart-pie-label {
+    -fx-text-fill: #f5f5f5;
+    -fx-fill: #f5f5f5;
+}
+
+.axis {
+    -fx-tick-label-fill: #bdbdbd;
+}
+
+.default-color0.chart-bar,
+.default-color0.chart-pie {
+    -fx-bar-fill: #d4af37;
+    -fx-pie-color: #d4af37;
+}
+
+.default-color1.chart-bar,
+.default-color1.chart-pie {
+    -fx-bar-fill: #5a4715;
+    -fx-pie-color: #5a4715;
+}
+
+.default-color2.chart-bar,
+.default-color2.chart-pie {
+    -fx-bar-fill: #8d7730;
+    -fx-pie-color: #8d7730;
+}
+
+.default-color3.chart-bar,
+.default-color3.chart-pie {
+    -fx-bar-fill: #c7b178;
+    -fx-pie-color: #c7b178;
+}
+
+.chat-stack {
+    -fx-background-color: transparent;
+}
+
+.chat-bubble {
+    -fx-background-radius: 18px;
+    -fx-padding: 14 16 14 16;
+    -fx-text-fill: #f5f5f5;
+}
+
+.chat-user {
+    -fx-background-color: linear-gradient(to right, #b9962a, #d4af37);
+    -fx-text-fill: #111111;
+}
+
+.chat-assistant {
+    -fx-background-color: #202020;
+    -fx-border-color: rgba(212, 175, 55, 0.16);
+    -fx-border-radius: 18px;
+}
+
+.chat-system {
+    -fx-background-color: rgba(212, 175, 55, 0.10);
+    -fx-border-color: rgba(212, 175, 55, 0.18);
+    -fx-border-radius: 18px;
+}
+
+.success-text {
+    -fx-text-fill: #8ccf7e;
+}
+
+.error-text {
+    -fx-text-fill: #ff7d7d;
+}
+
+.dialog-root {
+    -fx-background-color: #1a1a1a;
+}

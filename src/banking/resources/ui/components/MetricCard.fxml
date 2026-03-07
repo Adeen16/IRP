@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      spacing="8.0"
+      styleClass="glass-card">
+    <padding>
+        <Insets top="18.0" right="18.0" bottom="18.0" left="18.0" />
+    </padding>
+    <Label text="Metric" styleClass="field-label" />
+    <Label text="$0.00" styleClass="metric-value gold-text" />
+</VBox>

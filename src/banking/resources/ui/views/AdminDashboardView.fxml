@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:controller="banking.ui.controllers.AdminDashboardController"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            styleClass="app-root">
+    <left>
+        <VBox prefWidth="272.0" styleClass="sidebar" spacing="14.0">
+            <padding>
+                <Insets top="26.0" right="18.0" bottom="26.0" left="18.0" />
+            </padding>
+            <Label text="SECURE BANK" styleClass="brand-kicker" />
+            <Label text="Admin control center" styleClass="sidebar-subtitle" />
+            <Button fx:id="btnNavOverview" text="Dashboard" styleClass="sidebar-button sidebar-button-active" maxWidth="1.7976931348623157E308" onAction="#showOverview" />
+            <Button fx:id="btnNavCustomers" text="Manage Customers" styleClass="sidebar-button" maxWidth="1.7976931348623157E308" onAction="#showCustomers" />
+            <Button fx:id="btnNavAccounts" text="Manage Accounts" styleClass="sidebar-button" maxWidth="1.7976931348623157E308" onAction="#showAccounts" />
+            <Button fx:id="btnNavLoans" text="Manage Loans" styleClass="sidebar-button" maxWidth="1.7976931348623157E308" onAction="#showLoans" />
+            <Button fx:id="btnNavTransactions" text="Transaction Reports" styleClass="sidebar-button" maxWidth="1.7976931348623157E308" onAction="#showTransactions" />
+            <Button fx:id="btnNavUsers" text="System Users" styleClass="sidebar-button" maxWidth="1.7976931348623157E308" onAction="#showUsers" />
+            <Region VBox.vgrow="ALWAYS" />
+            <Button text="Logout" styleClass="danger-button" maxWidth="1.7976931348623157E308" onAction="#handleLogout" />
+        </VBox>
+    </left>
+    <center>
+        <BorderPane>
+            <top>
+                <HBox styleClass="header-bar" alignment="CENTER_LEFT" spacing="18.0">
+                    <padding>
+                        <Insets top="20.0" right="28.0" bottom="20.0" left="28.0" />
+                    </padding>
+                    <VBox spacing="4.0">
+                        <Label text="Administrator" styleClass="muted-text" />
+                        <Label fx:id="lblWelcome" styleClass="page-title" />
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS" />
+                    <VBox alignment="CENTER_RIGHT" spacing="4.0">
+                        <Label fx:id="lblHeaderContext" styleClass="body-strong" />
+                        <Label fx:id="lblSessionState" styleClass="muted-text" />
+                    </VBox>
+                </HBox>
+            </top>
+            <center>
+                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="shell-scroll">
+                    <content>
+                        <VBox spacing="24.0">
+                            <padding>
+                                <Insets top="28.0" right="28.0" bottom="28.0" left="28.0" />
+                            </padding>
+
+                            <VBox fx:id="paneOverview" spacing="24.0">
+                                <HBox spacing="18.0">
+                                    <VBox HBox.hgrow="ALWAYS" spacing="8.0" styleClass="glass-card">
+                                        <Label text="Total assets" styleClass="field-label" />
+                                        <Label fx:id="lblTotalAssets" styleClass="metric-value gold-text" />
+                                    </VBox>
+                                    <VBox HBox.hgrow="ALWAYS" spacing="8.0" styleClass="glass-card">
+                                        <Label text="Total accounts" styleClass="field-label" />
+                                        <Label fx:id="lblTotalAccounts" styleClass="metric-value" />
+                                    </VBox>
+                                    <VBox HBox.hgrow="ALWAYS" spacing="8.0" styleClass="glass-card">
+                                        <Label text="Pending loans" styleClass="field-label" />
+                                        <Label fx:id="lblPendingLoans" styleClass="metric-value" />
+                                    </VBox>
+                                    <VBox HBox.hgrow="ALWAYS" spacing="8.0" styleClass="glass-card">
+                                        <Label text="Customers" styleClass="field-label" />
+                                        <Label fx:id="lblTotalCustomers" styleClass="metric-value" />
+                                    </VBox>
+                                </HBox>
+                                <HBox spacing="18.0">
+                                    <VBox HBox.hgrow="ALWAYS" spacing="12.0" styleClass="glass-card">
+                                        <Label text="Transaction totals by type" styleClass="section-title" />
+                                        <BarChart fx:id="chartAdminTransactions" legendVisible="false" prefHeight="300.0">
+                                            <xAxis>
+                                                <CategoryAxis />
+                                            </xAxis>
+                                            <yAxis>
+                                                <NumberAxis />
+                                            </yAxis>
+                                        </BarChart>
+                                    </VBox>
+                                    <VBox prefWidth="360.0" spacing="12.0" styleClass="glass-card">
+                                        <Label text="Account type mix" styleClass="section-title" />
+                                        <PieChart fx:id="chartAccountTypes" prefHeight="300.0" />
+                                    </VBox>
+                                </HBox>
+                                <VBox spacing="12.0" styleClass="glass-card">
+                                    <HBox spacing="12.0">
+                                        <Label text="Recent transactions" styleClass="section-title" />
+                                        <Region HBox.hgrow="ALWAYS" />
+                                        <Button text="Refresh" styleClass="ghost-button" onAction="#handleRefreshAll" />
+                                    </HBox>
+                                    <TableView fx:id="tblAdminRecentTransactions" prefHeight="280.0" styleClass="fintech-table">
+                                        <columns>
+                                            <TableColumn fx:id="colAdminRecentDate" prefWidth="220.0" text="Date" />
+                                            <TableColumn fx:id="colAdminRecentType" prefWidth="160.0" text="Type" />
+                                            <TableColumn fx:id="colAdminRecentAmount" prefWidth="180.0" text="Amount" />
+                                        </columns>
+                                    </TableView>
+                                </VBox>
+                            </VBox>
+
+                            <VBox fx:id="paneCustomers" spacing="18.0" visible="false" managed="false">
+                                <HBox spacing="12.0" alignment="CENTER_LEFT">
+                                    <Label text="Manage Customers" styleClass="page-title" />
+                                    <Region HBox.hgrow="ALWAYS" />
+                                    <TextField fx:id="txtCustomerSearch" promptText="Search customers by name" styleClass="fintech-field" prefWidth="240.0" onAction="#handleSearchCustomers" />
+                                    <Button text="Search" styleClass="ghost-button" onAction="#handleSearchCustomers" />
+                                </HBox>
+                                <HBox spacing="18.0">
+                                    <VBox HBox.hgrow="ALWAYS" spacing="12.0" styleClass="glass-card">
+                                        <TableView fx:id="tblCustomers" prefHeight="520.0" styleClass="fintech-table">
+                                            <columns>
+                                                <TableColumn fx:id="colCustomerId" prefWidth="90.0" text="ID" />
+                                                <TableColumn fx:id="colCustomerName" prefWidth="180.0" text="Name" />
+                                                <TableColumn fx:id="colCustomerPhone" prefWidth="170.0" text="Phone" />
+                                                <TableColumn fx:id="colCustomerEmail" prefWidth="220.0" text="Email" />
+                                                <TableColumn fx:id="colCustomerCibil" prefWidth="120.0" text="CIBIL" />
+                                            </columns>
+                                        </TableView>
+                                    </VBox>
+                                    <VBox prefWidth="360.0" spacing="12.0" styleClass="glass-card">
+                                        <Label text="Customer editor" styleClass="section-title" />
+                                        <TextField fx:id="txtCustomerName" promptText="Full name" styleClass="fintech-field" />
+                                        <TextField fx:id="txtCustomerPhone" promptText="Phone number" styleClass="fintech-field" />
+                                        <TextField fx:id="txtCustomerEmail" promptText="Email address" styleClass="fintech-field" />
+                                        <HBox spacing="10.0">
+                                            <Button text="New" styleClass="ghost-button" onAction="#handleNewCustomer" />
+                                            <Button text="Save" styleClass="primary-button" onAction="#handleSaveCustomer" />
+                                            <Button text="Delete" styleClass="danger-button" onAction="#handleDeleteCustomer" />
+                                        </HBox>
+                                    </VBox>
+                                </HBox>
+                            </VBox>
+
+                            <VBox fx:id="paneAccounts" spacing="18.0" visible="false" managed="false">
+                                <HBox spacing="12.0" alignment="CENTER_LEFT">
+                                    <Label text="Manage Accounts" styleClass="page-title" />
+                                    <Region HBox.hgrow="ALWAYS" />
+                                    <Button text="Refresh" styleClass="ghost-button" onAction="#handleRefreshAll" />
+                                </HBox>
+                                <HBox spacing="18.0">
+                                    <VBox HBox.hgrow="ALWAYS" spacing="12.0" styleClass="glass-card">
+                                        <TableView fx:id="tblAccounts" prefHeight="520.0" styleClass="fintech-table">
+                                            <columns>
+                                                <TableColumn fx:id="colAccountNumber" prefWidth="220.0" text="Account #" />
+                                                <TableColumn fx:id="colAccountCustomer" prefWidth="220.0" text="Customer" />
+                                                <TableColumn fx:id="colAccountType" prefWidth="120.0" text="Type" />
+                                                <TableColumn fx:id="colAccountBalance" prefWidth="170.0" text="Balance" />
+                                            </columns>
+                                        </TableView>
+                                    </VBox>
+                                    <VBox prefWidth="380.0" spacing="12.0" styleClass="glass-card">
+                                        <Label text="Create account" styleClass="section-title" />
+                                        <TextField fx:id="txtAccountCustomerName" promptText="Customer name" styleClass="fintech-field" />
+                                        <TextField fx:id="txtAccountPhone" promptText="Customer phone" styleClass="fintech-field" />
+                                        <TextField fx:id="txtAccountEmail" promptText="Customer email" styleClass="fintech-field" />
+                                        <ComboBox fx:id="cmbAccountType" styleClass="fintech-combo" />
+                                        <PasswordField fx:id="txtAccountPin" promptText="Transaction PIN (4-6 digits)" styleClass="fintech-field" />
+                                        <TextField fx:id="txtAccountInitialDeposit" promptText="Initial deposit" styleClass="fintech-field" />
+                                        <HBox spacing="10.0">
+                                            <Button text="Create Account" styleClass="primary-button" onAction="#handleCreateAccount" />
+                                            <Button text="Close Selected" styleClass="danger-button" onAction="#handleCloseSelectedAccount" />
+                                        </HBox>
+                                    </VBox>
+                                </HBox>
+                            </VBox>
+
+                            <VBox fx:id="paneLoans" spacing="18.0" visible="false" managed="false">
+                                <HBox spacing="12.0" alignment="CENTER_LEFT">
+                                    <Label text="Manage Loans" styleClass="page-title" />
+                                    <Region HBox.hgrow="ALWAYS" />
+                                    <Button text="Refresh" styleClass="ghost-button" onAction="#handleRefreshLoans" />
+                                    <Button text="Reject" styleClass="danger-button" onAction="#handleRejectLoan" />
+                                    <Button text="Approve" styleClass="primary-button" onAction="#handleApproveLoan" />
+                                </HBox>
+                                <VBox spacing="12.0" styleClass="glass-card">
+                                    <TableView fx:id="tblLoans" prefHeight="520.0" styleClass="fintech-table">
+                                        <columns>
+                                            <TableColumn fx:id="colLoanId" prefWidth="90.0" text="Loan ID" />
+                                            <TableColumn fx:id="colLoanCustomerId" prefWidth="120.0" text="Customer ID" />
+                                            <TableColumn fx:id="colLoanAccount" prefWidth="190.0" text="Account" />
+                                            <TableColumn fx:id="colLoanType" prefWidth="160.0" text="Type" />
+                                            <TableColumn fx:id="colLoanAmount" prefWidth="170.0" text="Amount" />
+                                            <TableColumn fx:id="colLoanStatus" prefWidth="130.0" text="Status" />
+                                        </columns>
+                                    </TableView>
+                                </VBox>
+                            </VBox>
+
+                            <VBox fx:id="paneTransactions" spacing="18.0" visible="false" managed="false">
+                                <HBox spacing="12.0" alignment="CENTER_LEFT">
+                                    <Label text="Transaction Reports" styleClass="page-title" />
+                                    <Region HBox.hgrow="ALWAYS" />
+                                    <ComboBox fx:id="cmbTransactionAccount" styleClass="fintech-combo" prefWidth="220.0" />
+                                    <TextField fx:id="txtTransactionFrom" promptText="From yyyy-mm-dd" styleClass="fintech-field" prefWidth="160.0" />
+                                    <TextField fx:id="txtTransactionTo" promptText="To yyyy-mm-dd" styleClass="fintech-field" prefWidth="160.0" />
+                                    <Button text="Search" styleClass="ghost-button" onAction="#handleSearchTransactions" />
+                                    <Button text="Last 5" styleClass="secondary-button" onAction="#handleLastFiveTransactions" />
+                                    <Button text="Show All" styleClass="primary-button" onAction="#handleShowAllTransactions" />
+                                </HBox>
+                                <VBox spacing="12.0" styleClass="glass-card">
+                                    <TableView fx:id="tblTransactions" prefHeight="520.0" styleClass="fintech-table">
+                                        <columns>
+                                            <TableColumn fx:id="colTransactionId" prefWidth="90.0" text="ID" />
+                                            <TableColumn fx:id="colTransactionAccount" prefWidth="190.0" text="Account" />
+                                            <TableColumn fx:id="colTransactionType" prefWidth="140.0" text="Type" />
+                                            <TableColumn fx:id="colTransactionAmount" prefWidth="170.0" text="Amount" />
+                                            <TableColumn fx:id="colTransactionDate" prefWidth="220.0" text="Date" />
+                                        </columns>
+                                    </TableView>
+                                </VBox>
+                            </VBox>
+
+                            <VBox fx:id="paneUsers" spacing="18.0" visible="false" managed="false">
+                                <HBox spacing="12.0" alignment="CENTER_LEFT">
+                                    <Label text="System Users" styleClass="page-title" />
+                                    <Region HBox.hgrow="ALWAYS" />
+                                    <Button text="Refresh" styleClass="ghost-button" onAction="#handleRefreshAll" />
+                                </HBox>
+                                <HBox spacing="18.0">
+                                    <VBox HBox.hgrow="ALWAYS" spacing="12.0" styleClass="glass-card">
+                                        <TableView fx:id="tblUsers" prefHeight="520.0" styleClass="fintech-table">
+                                            <columns>
+                                                <TableColumn fx:id="colUserId" prefWidth="90.0" text="ID" />
+                                                <TableColumn fx:id="colUsername" prefWidth="180.0" text="Username" />
+                                                <TableColumn fx:id="colUserRole" prefWidth="120.0" text="Role" />
+                                                <TableColumn fx:id="colUserCreated" prefWidth="160.0" text="Created" />
+                                            </columns>
+                                        </TableView>
+                                    </VBox>
+                                    <VBox prefWidth="380.0" spacing="12.0" styleClass="glass-card">
+                                        <Label text="Create system user" styleClass="section-title" />
+                                        <TextField fx:id="txtSystemUsername" promptText="Username" styleClass="fintech-field" />
+                                        <PasswordField fx:id="txtSystemPassword" promptText="Password" styleClass="fintech-field" />
+                                        <PasswordField fx:id="txtSystemConfirm" promptText="Confirm password" styleClass="fintech-field" />
+                                        <ComboBox fx:id="cmbSystemRole" styleClass="fintech-combo" />
+                                        <ComboBox fx:id="cmbSystemCustomer" styleClass="fintech-combo" promptText="Link customer profile" />
+                                        <HBox spacing="10.0">
+                                            <Button text="Create User" styleClass="primary-button" onAction="#handleCreateUser" />
+                                            <Button text="Delete Selected" styleClass="danger-button" onAction="#handleDeleteUser" />
+                                        </HBox>
+                                    </VBox>
+                                </HBox>
+                            </VBox>
+                        </VBox>
+                    </content>
+                </ScrollPane>
+            </center>
+        </BorderPane>
+    </center>
+</BorderPane>
