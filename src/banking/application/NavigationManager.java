@@ -1,9 +1,9 @@
 package banking.application;
 
-import banking.ui.ThemeManager;
 import banking.model.User;
 import banking.security.AuthSession;
-import banking.controllers.DashboardController;
+import banking.ui.admin.AdminDashboard;
+import banking.ui.user.UserDashboard;
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,57 +11,68 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.net.URL;
+
 public class NavigationManager {
 
     public static void navigateToLogin(Stage stage) {
         try {
             AuthSession.clear();
-            FXMLLoader loader = new FXMLLoader(NavigationManager.class.getResource("/banking/resources/fxml/LandingPage.fxml"));
+            String fxmlPath = "banking/resources/fxml/LandingPage.fxml";
+            
+            FXMLLoader loader = new FXMLLoader(NavigationManager.class.getClassLoader().getResource(fxmlPath));
             Parent root = loader.load();
             
             Scene scene = new Scene(root, 900, 600);
-            ThemeManager.apply(scene);
+            applyTheme(scene);
             root.setOpacity(0);
             stage.setTitle("Secure Banking System");
             stage.setScene(scene);
-            ThemeManager.apply(stage);
+            applyTheme(stage);
             
             FadeTransition ft = new FadeTransition(Duration.millis(500), root);
             ft.setFromValue(0);
             ft.setToValue(1);
             ft.play();
         } catch (Exception e) {
+            System.out.println("[ERROR] Failed to load login page:");
             e.printStackTrace();
         }
     }
 
     public static void navigateToDashboard(Stage stage, User user) {
-        try {
-            AuthSession.start(user);
-            String fxmlPath = user.isAdmin() ? "/banking/resources/fxml/AdminDashboard.fxml" : "/banking/resources/fxml/UserDashboard.fxml";
-            String title = user.isAdmin() ? "Admin Dashboard" : "User Dashboard";
-            
-            FXMLLoader loader = new FXMLLoader(NavigationManager.class.getResource(fxmlPath));
-            Parent root = loader.load();
-            
-            Object controller = loader.getController();
-            if (controller instanceof DashboardController) {
-                ((DashboardController) controller).setUser(user);
+        AuthSession.start(user);
+        
+        // Close the JavaFX stage and launch Swing dashboard directly
+        stage.close();
+        
+        // Launch the appropriate Swing dashboard based on role
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            if (user.isAdmin()) {
+                AdminDashboard adminDashboard = new AdminDashboard(user);
+                adminDashboard.setVisible(true);
+            } else {
+                UserDashboard userDashboard = new UserDashboard(user);
+                userDashboard.setVisible(true);
             }
-            
-            Scene scene = new Scene(root, 900, 600);
-            ThemeManager.apply(scene);
-            root.setOpacity(0);
-            stage.setTitle(title);
-            stage.setScene(scene);
-            ThemeManager.apply(stage);
-            
-            FadeTransition ft = new FadeTransition(Duration.millis(500), root);
-            ft.setFromValue(0);
-            ft.setToValue(1);
-            ft.play();
+        });
+    }
+    
+    private static void applyTheme(Scene scene) {
+        try {
+            String cssPath = "banking/resources/css/global.css";
+            URL cssUrl = NavigationManager.class.getClassLoader().getResource(cssPath);
+            if (cssUrl != null) {
+                scene.getStylesheets().add(cssUrl.toExternalForm());
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("[WARN] Could not apply theme: " + e.getMessage());
+        }
+    }
+    
+    private static void applyTheme(Stage stage) {
+        if (stage != null && stage.getScene() != null) {
+            applyTheme(stage.getScene());
         }
     }
 }

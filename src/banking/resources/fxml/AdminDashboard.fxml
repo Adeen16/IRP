@@ -42,7 +42,7 @@
             <HBox spacing="16">
                 <VBox styleClass="metric-card" HBox.hgrow="ALWAYS" spacing="4">
                     <Label text="Total Assets" styleClass="metric-label"/>
-                    <Label text="$0" styleClass="metric-value text-gold" fx:id="lblTotalAssets"/>
+                    <Label styleClass="metric-value text-gold" fx:id="lblTotalAssets"/>
                 </VBox>
                 <VBox styleClass="metric-card" HBox.hgrow="ALWAYS" spacing="4">
                     <Label text="Total Accounts" styleClass="metric-label"/>

@@ -40,7 +40,7 @@
                 <!-- Balance Card -->
                 <VBox styleClass="metric-card" HBox.hgrow="ALWAYS" spacing="8">
                     <Label text="Account Balance" styleClass="metric-label"/>
-                    <Label text="$0.00" styleClass="metric-value text-gold" fx:id="lblBalance"/>
+                    <Label styleClass="metric-value text-gold" fx:id="lblBalance"/>
                     <ComboBox fx:id="cmbAccount" styleClass="input-field" promptText="Select Account"/>
                 </VBox>
 

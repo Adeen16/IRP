@@ -42,6 +42,12 @@ public class DashboardController {
         if (lblBrand != null && user.isAdmin()) {
             lblBrand.setText("SECURE BANK - ADMIN");
         }
+        // Initialize default values
+        if (lblBalance != null) lblBalance.setText("$0.00");
+        if (lblTotalAssets != null) lblTotalAssets.setText("$0");
+        if (lblTotalAccounts != null) lblTotalAccounts.setText("0");
+        if (lblTotalCustomers != null) lblTotalCustomers.setText("0");
+        if (lblPendingLoans != null) lblPendingLoans.setText("0");
     }
 
     @FXML
@@ -52,25 +58,21 @@ public class DashboardController {
     
     @FXML
     private void handleDeposit(ActionEvent event) {
-        // Launch legacy Swing dialog for deposit
         launchLegacyDashboard(event);
     }
     
     @FXML
     private void handleWithdraw(ActionEvent event) {
-        // Launch legacy Swing dialog for withdraw
         launchLegacyDashboard(event);
     }
     
     @FXML
     private void handleTransfer(ActionEvent event) {
-        // Launch legacy Swing dialog for transfer
         launchLegacyDashboard(event);
     }
     
     @FXML
     private void handleApplyLoan(ActionEvent event) {
-        // Launch legacy Swing panel for loan
         launchLegacyDashboard(event);
     }
     

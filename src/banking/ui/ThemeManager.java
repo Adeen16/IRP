@@ -6,8 +6,8 @@ import javafx.stage.Stage;
 import java.net.URL;
 
 public final class ThemeManager {
-    private static final String THEME = "/banking/resources/css/luxury-theme.css";
-    private static final String FALLBACK_THEME = "/banking/resources/css/global.css";
+    private static final String THEME = "banking/resources/css/luxury-theme.css";
+    private static final String FALLBACK_THEME = "banking/resources/css/global.css";
 
     private ThemeManager() {
     }
@@ -17,11 +17,12 @@ public final class ThemeManager {
             return;
         }
 
-        URL themeUrl = ThemeManager.class.getResource(THEME);
+        URL themeUrl = ThemeManager.class.getClassLoader().getResource(THEME);
         if (themeUrl == null) {
-            themeUrl = ThemeManager.class.getResource(FALLBACK_THEME);
+            themeUrl = ThemeManager.class.getClassLoader().getResource(FALLBACK_THEME);
         }
         if (themeUrl == null) {
+            System.out.println("[WARN] Theme CSS not found");
             return;
         }
 

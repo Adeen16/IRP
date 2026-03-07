@@ -36,17 +36,23 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Entrance slide animation for the card
-        TranslateTransition tt = new TranslateTransition(Duration.millis(600), loginCard);
-        tt.setFromY(30);
-        tt.setToY(0);
-        tt.play();
+        // Entrance slide animation for the card (if present)
+        if (loginCard != null) {
+            TranslateTransition tt = new TranslateTransition(Duration.millis(600), loginCard);
+            tt.setFromY(30);
+            tt.setToY(0);
+            tt.play();
+        }
         
-        // Button Hover Animation
-        addScaleHover(btnLogin);
+        // Button Hover Animation (if button exists)
+        if (btnLogin != null) {
+            addScaleHover(btnLogin);
+        }
     }
     
     private void addScaleHover(Button button) {
+        if (button == null) return;
+        
         ScaleTransition stIn = new ScaleTransition(Duration.millis(150), button);
         stIn.setToX(1.02);
         stIn.setToY(1.02);
@@ -68,22 +74,23 @@ public class LoginController implements Initializable {
 
     @FXML
     private void handleLogin(ActionEvent event) {
-        String username = txtUsername.getText().trim();
-        String password = txtPassword.getText();
+        String username = txtUsername != null ? txtUsername.getText().trim() : "";
+        String password = txtPassword != null ? txtPassword.getText() : "";
 
         if (username.isEmpty() || password.isEmpty()) {
             showError("Please enter both username and password.");
             return;
         }
 
-        lblError.setVisible(false);
-        btnLogin.setDisable(true);
-        btnLogin.setText("Authenticating...");
+        if (lblError != null) lblError.setVisible(false);
+        if (btnLogin != null) {
+            btnLogin.setDisable(true);
+            btnLogin.setText("Authenticating...");
+        }
 
         Task<User> loginTask = new Task<>() {
             @Override
             protected User call() throws Exception {
-                // Background thread authentication
                 return authService.login(username, password);
             }
         };
@@ -91,15 +98,18 @@ public class LoginController implements Initializable {
         loginTask.setOnSucceeded(e -> {
             User user = loginTask.getValue();
             if (user != null) {
-                // Temporarily just print success until dashboards are connected
                 System.out.println("Login Success for: " + user.getUsername());
-                btnLogin.setText("Success!");
-                btnLogin.setStyle("-fx-background-color: #10B981; -fx-text-fill: white;"); // Emerald 500
+                if (btnLogin != null) {
+                    btnLogin.setText("Success!");
+                    btnLogin.setStyle("-fx-background-color: #10B981; -fx-text-fill: white;");
+                }
                 
                 javafx.animation.PauseTransition pause = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(0.5));
                 pause.setOnFinished(ev -> {
-                    javafx.stage.Stage stage = (javafx.stage.Stage) btnLogin.getScene().getWindow();
-                    banking.application.NavigationManager.navigateToDashboard(stage, user);
+                    javafx.stage.Stage stage = (javafx.stage.Stage) (btnLogin != null ? btnLogin.getScene().getWindow() : null);
+                    if (stage != null) {
+                        banking.application.NavigationManager.navigateToDashboard(stage, user);
+                    }
                 });
                 pause.play();
             }
@@ -108,15 +118,19 @@ public class LoginController implements Initializable {
         loginTask.setOnFailed(e -> {
             Throwable ex = loginTask.getException();
             showError("Authentication failed: " + ex.getMessage());
-            btnLogin.setDisable(false);
-            btnLogin.setText("Sign In");
+            if (btnLogin != null) {
+                btnLogin.setDisable(false);
+                btnLogin.setText("Sign In");
+            }
         });
 
         new Thread(loginTask).start();
     }
     
     private void showError(String message) {
-        lblError.setText(message);
-        lblError.setVisible(true);
+        if (lblError != null) {
+            lblError.setText(message);
+            lblError.setVisible(true);
+        }
     }
 }

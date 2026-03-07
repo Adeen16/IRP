@@ -5,17 +5,24 @@ echo ==============================================
 echo     Secure Banking System - Portable Build
 echo ==============================================
 
-:: Hardcoded path to the known working Java on this machine
-set "JAVA_DIR=C:\Program Files\JetBrains\PyCharm Community Edition 2024.3.4\jbr"
-if not exist "%JAVA_DIR%" (
-    :: Fallback to Android Studio if PyCharm JBR is missing
-    set "JAVA_DIR=C:\Program Files\Android\Android Studio\jbr"
+:: Portable Java Detection: Check local jre first, then system PATH
+if exist "jre\bin\java.exe" (
+    set "JAVA=jre\bin\java.exe"
+    set "JAVAC=jre\bin\javac.exe"
+) else (
+    :: Use system Java from PATH
+    where java >nul 2>nul
+    if %errorlevel% neq 0 (
+        echo [ERROR] Java not found in PATH.
+        echo Please install Java 17 or higher.
+        pause
+        exit /b
+    )
+    set "JAVA=java"
+    set "JAVAC=javac"
 )
 
-set "JAVA_EXEC=%JAVA_DIR%\bin\java.exe"
-set "JAVAC_EXEC=%JAVA_DIR%\bin\javac.exe"
-
-echo [1/3] Using Java: "%JAVA_EXEC%"
+echo [1/3] Using Java: %JAVA%
 
 :: 2. Compile everything
 echo [2/3] Compiling Secure Banking System (JavaFX)...
@@ -28,7 +35,7 @@ set "FX_MODULES=--module-path lib\javafx-sdk\lib --add-modules javafx.controls,j
 dir /s /B src\*.java > sources.txt
 
 :: Compile
-"%JAVAC_EXEC%" %FX_MODULES% -d bin -cp "%CLASSPATH%;src" @sources.txt
+%JAVAC% %FX_MODULES% -d bin -cp "%CLASSPATH%;src" @sources.txt
 if %errorlevel% neq 0 (
     echo [ERROR] Compilation failed.
     del sources.txt
@@ -44,6 +51,6 @@ xcopy /s /y /i src\banking\resources\* bin\banking\resources\ >nul
 
 :: 3. Run the App
 echo [3/3] Launching JavaFX System...
-"%JAVA_EXEC%" -Dprism.order=sw %FX_MODULES% -cp "%CLASSPATH%;bin" banking.application.MainAppFX
+%JAVA% -Dprism.order=sw %FX_MODULES% -cp "%CLASSPATH%;bin" banking.application.MainAppFX
 
 pause
